@@ -2,14 +2,24 @@
 
 void Widget::CreateTrayIcon() // TODO - mnoho věcí tato funkce dělá
 {
+    m_pOpenAction = new QAction(tr("&Open"), this);
+    connect(m_pOpenAction, &QAction::triggered, this, &Widget::OpenWindow);
+
+    m_pPostponeAction = new QAction(tr("&Postpone the break"), this);
+    connect(m_pOpenAction, &QAction::triggered, this, &Widget::PostponeTheBreak);
+
     m_pQuitAction = new QAction(tr("&Quit"), this);
     connect(m_pQuitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 
-    trayIconMenu = new QMenu(this);
-    trayIconMenu->addAction(m_pQuitAction);
+    QMenu* pTrayIconMenu = new QMenu(this);
+    pTrayIconMenu->addAction(m_pOpenAction);
+    pTrayIconMenu->addSeparator();
+    pTrayIconMenu->addAction(m_pPostponeAction);
+    pTrayIconMenu->addSeparator();
+    pTrayIconMenu->addAction(m_pQuitAction);
 
     m_pTrayIcon = new QSystemTrayIcon(this);
-    m_pTrayIcon->setContextMenu(trayIconMenu);
+    m_pTrayIcon->setContextMenu(pTrayIconMenu);
 }
 
 void Widget::SetTrayIcon(QString strIcon)
@@ -18,7 +28,6 @@ void Widget::SetTrayIcon(QString strIcon)
     {
         QIcon icon(strIcon);
         m_pTrayIcon->setIcon(icon);
-//    setWindowIcon(icon);  // set app icon
         m_pTrayIcon->setVisible(true);
 
         m_strSetTrayIcon = strIcon;
@@ -27,7 +36,7 @@ void Widget::SetTrayIcon(QString strIcon)
 
 void Widget::LoadValues()
 {
-    m_pAppSettings = new QSettings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
+    m_pAppSettings = new QSettings(QCoreApplication::organizationName(), QCoreApplication::applicationName(), this);
     qDebug() << QCoreApplication::organizationName() << QCoreApplication::applicationName();
 
     m_nWorkTime_s = m_pAppSettings->value("work_time", m_nWorkTime_s).toInt();
@@ -92,6 +101,18 @@ void Widget::CreateLayout()
     this->setLayout(pMainLayout);
 }
 
+void Widget::OpenWindow()
+{
+    this->setWindowState(this->windowState() & ~Qt::WindowMinimized);
+    this->show();
+    this->activateWindow();
+}
+
+void Widget::PostponeTheBreak()
+{
+    // TODO
+}
+
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
 {
@@ -111,9 +132,7 @@ Widget::Widget(QWidget *parent)
         switch (eReason) {
         case QSystemTrayIcon::DoubleClick:
         case QSystemTrayIcon::Trigger:
-            this->setWindowState(this->windowState() & ~Qt::WindowMinimized);
-            this->show();
-            this->activateWindow();
+            OpenWindow();
             break;
         default:
             break;
@@ -149,26 +168,19 @@ Widget::Widget(QWidget *parent)
                 SetTrayIcon(":/go_icon.png");
             }
 
-            if(m_nUserActiveTime_ms / 1000 > m_nWorkTime_s)
+            if(m_nToleranceTime_s > 0 && m_nUserIdleTime_ms / 1000 > m_nToleranceTime_s)
             {
-                if(m_nToleranceTime_s > 0 && m_nUserIdleTime_ms / 1000 > m_nToleranceTime_s)
+                if((nTickCount - lastInputInfo.dwTime) / 1000 < m_nToleranceTime_s && m_nPseudoStartLastUserInput_ms == -1)
                 {
-                    if((nTickCount - lastInputInfo.dwTime) / 1000 < m_nToleranceTime_s && m_nPseudoStartLastUserInput_ms == -1)
-                    {
-                        m_nPseudoStartLastUserInput_ms = lastInputInfo.dwTime;
-                    }
-                    else if((nTickCount - lastInputInfo.dwTime) / 1000 < m_nToleranceTime_s && (nTickCount - m_nPseudoStartLastUserInput_ms) / 1000 > m_nToleranceTime_s)
-                    {
-                        m_nPseudoLastUserInput_ms = lastInputInfo.dwTime;
-                    }
-                    else if((nTickCount - lastInputInfo.dwTime) / 1000 > m_nToleranceTime_s)
-                    {
-                        m_nPseudoStartLastUserInput_ms = -1;
-                    }
+                    m_nPseudoStartLastUserInput_ms = lastInputInfo.dwTime;
                 }
-                else
+                else if((nTickCount - lastInputInfo.dwTime) / 1000 < m_nToleranceTime_s && (nTickCount - m_nPseudoStartLastUserInput_ms) / 1000 > m_nToleranceTime_s)
                 {
                     m_nPseudoLastUserInput_ms = lastInputInfo.dwTime;
+                }
+                else if((nTickCount - lastInputInfo.dwTime) / 1000 > m_nToleranceTime_s)
+                {
+                    m_nPseudoStartLastUserInput_ms = -1;
                 }
             }
             else
@@ -182,7 +194,6 @@ Widget::Widget(QWidget *parent)
             // if the user is idle for too long, reset counter
             if(m_nUserIdleTime_ms / 1000 > m_nRestTime_s)
             {
-//                PlaySound(TEXT("SystemStart"), NULL, SND_ALIAS);
                 m_nStartUserActiveTime_ms = -1;
             }
 
@@ -191,7 +202,7 @@ Widget::Widget(QWidget *parent)
                               .arg(lastInputInfo.dwTime).arg(nTickCount).arg(QDateTime::fromTime_t(m_nUserIdleTime_ms / 1000).toUTC().toString("mm:ss")).arg(QDateTime::fromTime_t(m_nUserActiveTime_ms / 1000).toUTC().toString("mm:ss")));
 
             m_pTrayIcon->setToolTip(QString(tr("Work time is %1 mins"))
-                                    .arg(QDateTime::fromTime_t(m_nUserActiveTime_ms / 1000).toUTC().toString("m")));
+                                    .arg(QDateTime::fromTime_t(m_nUserActiveTime_ms / 1000).toUTC().toString("m")));    // FIXME - nezobrazuje víc než 59 minut
 //                                    .arg(QDateTime::fromTime_t((m_nWarningTime_s - m_nUserActiveTime_ms) < 0 ? 0 : (m_nWarningTime_s - m_nUserActiveTime_ms) / 1000).toUTC().toString("mm:ss")));
         }
         else

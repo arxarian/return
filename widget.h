@@ -19,10 +19,11 @@ class Widget : public QWidget
 
     QLabel* m_pLabel;
 
-    QSystemTrayIcon* m_pTrayIcon;
-    QMenu *trayIconMenu;
+    QAction* m_pQuitAction;
+    QAction* m_pOpenAction;
+    QAction* m_pPostponeAction;
 
-    QAction *m_pQuitAction;
+    QSystemTrayIcon* m_pTrayIcon;
 
     QTimer m_oTimer;
     QTimer m_oBeepTimer;
@@ -42,7 +43,7 @@ class Widget : public QWidget
 
     QString m_strSetTrayIcon;
 
-    QSettings* m_pAppSettings;  // FIXME - free memory
+    QSettings* m_pAppSettings;
 
     void CreateTrayIcon();
     void SetTrayIcon(QString strIcon);
@@ -56,6 +57,10 @@ public:
     // QWidget interface
 protected:
     void closeEvent(QCloseEvent *event) override;
+
+private slots:
+    void OpenWindow();
+    void PostponeTheBreak();
 };
 
 #endif // WIDGET_H

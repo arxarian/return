@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
   j)      okénko pro test reporty a feedback over internet a donate (paypal, bitcoin, ...)
   k)      hezčí a nativní grafika
   l)      měření celkového času u počítače? Měřit počet period? Do kdy? Resetovat na požádání? Na úspání počítače?
-  m)      run at startup checkbox - http://stackoverflow.com/questions/9534415/run-application-on-startup
+  m)      run at startup checkbox - http://stackoverflow.com/questions/9534415/run-application-on-startup (C:\Users\hubnerp\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup)
   n)      translations
   o)      event driven
   p)      sound signalisation
@@ -40,6 +40,9 @@ int main(int argc, char *argv[])
   u)      better name
   v)      always on top
   w) ok - saving data in QSettings
+  x)      bug in tolerance setting (it counts plus one)
+  y)      info about running in tray system
+  w)      resetuje se bez pipani pri prekroceni worktime
   */
 
 // http://doc.qt.io/qt-5/qtwidgets-desktop-systray-example.html
