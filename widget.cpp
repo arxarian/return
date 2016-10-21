@@ -113,8 +113,7 @@ void Widget::PostponeTheBreak()
     // TODO
 }
 
-Widget::Widget(QWidget *parent)
-    : QWidget(parent)
+Widget::Widget(QWidget *parent) : QWidget(parent)
 {
     CreateTrayIcon();
     SetTrayIcon(":/go_icon.png");
@@ -201,9 +200,9 @@ Widget::Widget(QWidget *parent)
             m_pLabel->setText(QString("The last user input time\t%1\nCurrent time\t\t%2\nUser idle time\t\t%3\nUser active time\t\t%4")
                               .arg(lastInputInfo.dwTime).arg(nTickCount).arg(QDateTime::fromTime_t(m_nUserIdleTime_ms / 1000).toUTC().toString("mm:ss")).arg(QDateTime::fromTime_t(m_nUserActiveTime_ms / 1000).toUTC().toString("mm:ss")));
 
-            m_pTrayIcon->setToolTip(QString(tr("Work time is %1 mins"))
-                                    .arg(QDateTime::fromTime_t(m_nUserActiveTime_ms / 1000).toUTC().toString("m")));    // FIXME - nezobrazuje víc než 59 minut
-//                                    .arg(QDateTime::fromTime_t((m_nWarningTime_s - m_nUserActiveTime_ms) < 0 ? 0 : (m_nWarningTime_s - m_nUserActiveTime_ms) / 1000).toUTC().toString("mm:ss")));
+            m_pTrayIcon->setToolTip(QString(tr("Work time is %1 mins")).arg(m_nUserActiveTime_ms / (1000 * 60)));
+
+            // FIXME - nezobrazuje víc než 59 minut
         }
         else
         {
