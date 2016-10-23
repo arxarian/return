@@ -14,9 +14,13 @@ TEMPLATE = app
 CONFIG += c++11
 
 SOURCES += main.cpp\
-        widget.cpp
+        widget.cpp \
+    lastuserinput.cpp \
+    usertimesettings.cpp
 
-HEADERS  += widget.h
+HEADERS  += widget.h \
+    lastuserinput.h \
+    usertimesettings.h
 
 LIBS += -lKernel32
 

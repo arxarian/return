@@ -9,9 +9,8 @@
 #include <QMenu>
 #include <QDebug>
 
-#include "windows.h"
-#include "winbase.h"
-#include <mmsystem.h>
+#include "lastuserinput.h"
+#include "usertimesettings.h"
 
 class Widget : public QWidget
 {
@@ -28,19 +27,6 @@ class Widget : public QWidget
     QTimer m_oTimer;
     QTimer m_oBeepTimer;
 
-    qint64 m_nPseudoLastUserInput_ms = 0;
-    qint64 m_nPseudoStartLastUserInput_ms = 0;
-
-
-    qint64 m_nStartUserActiveTime_ms = -1;
-    qint64 m_nUserActiveTime_ms;
-    qint64 m_nUserIdleTime_ms = 0;
-
-    qint32 m_nWorkTime_s = 25 * 60;
-    qint32 m_nRestTime_s = 5 * 60;
-    qint32 m_nWarningTime_s = 2 * 60;
-    quint32 m_nToleranceTime_s = 3;
-
     QString m_strSetTrayIcon;
 
     QSettings* m_pAppSettings;
@@ -50,9 +36,11 @@ class Widget : public QWidget
     void LoadValues();
     void CreateLayout();
 
+    void SetIconByTime();
+
 public:
     Widget(QWidget *parent = 0);
-    ~Widget();
+    ~Widget() {}
 
     // QWidget interface
 protected:

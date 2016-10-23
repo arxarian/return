@@ -39,9 +39,9 @@ void Widget::LoadValues()
     m_pAppSettings = new QSettings(QCoreApplication::organizationName(), QCoreApplication::applicationName(), this);
     qDebug() << QCoreApplication::organizationName() << QCoreApplication::applicationName();
 
-    m_nWorkTime_s = m_pAppSettings->value("work_time", m_nWorkTime_s).toInt();
-    m_nRestTime_s = m_pAppSettings->value("rest_time", m_nRestTime_s).toInt();
-    m_nToleranceTime_s = m_pAppSettings->value("tolerance_time", m_nToleranceTime_s).toInt();
+    UserTimeSettings::SetWorkTime_s(m_pAppSettings->value("work_time", UserTimeSettings::WorkTime_s()).toInt());
+    UserTimeSettings::SetRestTime_s(m_pAppSettings->value("rest_time", UserTimeSettings::RestTime_s()).toInt());
+    UserTimeSettings::SetToleranceTime_s(m_pAppSettings->value("tolerance_time", UserTimeSettings::ToleranceTime_s()).toInt());
 }
 
 void Widget::CreateLayout()
@@ -52,11 +52,11 @@ void Widget::CreateLayout()
     QHBoxLayout* pWorkLayout = new QHBoxLayout;
     QLabel* pWorkLabel = new QLabel(tr("Work time [mins]"));
     QSpinBox* pSpinWorkTime_s = new QSpinBox(this); // TODO - má tu být this? Nemá tu být některý child?
-    pSpinWorkTime_s->setValue(m_nWorkTime_s / 60);
+    pSpinWorkTime_s->setValue(UserTimeSettings::WorkTime_s() / 60);
     pSpinWorkTime_s->setMaximum(999);
     connect(pSpinWorkTime_s, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=](const int &nNewValue) {
-        m_nWorkTime_s = nNewValue * 60;
-        m_pAppSettings->setValue("work_time", m_nWorkTime_s);
+        UserTimeSettings::SetWorkTime_s(nNewValue * 60);
+        m_pAppSettings->setValue("work_time", UserTimeSettings::WorkTime_s());
     });
     pWorkLayout->addWidget(pWorkLabel);
     pWorkLayout->addWidget(pSpinWorkTime_s);
@@ -65,11 +65,11 @@ void Widget::CreateLayout()
     QHBoxLayout* pRestLayout = new QHBoxLayout;
     QLabel* pRestLabel = new QLabel(tr("Rest time [mins]"));
     QSpinBox* pSpinRestTime_s = new QSpinBox(this);
-    pSpinRestTime_s->setValue(m_nRestTime_s / 60);
+    pSpinRestTime_s->setValue(UserTimeSettings::RestTime_s() / 60);
     pSpinRestTime_s->setMaximum(999);
     connect(pSpinRestTime_s, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=](const int &nNewValue) {
-       m_nRestTime_s = nNewValue * 60;
-       m_pAppSettings->setValue("rest_time", m_nRestTime_s);
+       UserTimeSettings::SetRestTime_s(nNewValue * 60);
+       m_pAppSettings->setValue("rest_time", UserTimeSettings::RestTime_s());
     });
     pRestLayout->addWidget(pRestLabel);
     pRestLayout->addWidget(pSpinRestTime_s);
@@ -78,11 +78,11 @@ void Widget::CreateLayout()
     QHBoxLayout* pToleranceLayout = new QHBoxLayout;
     QLabel* pToleranceLabel = new QLabel(tr("Tolerance time [s]"));
     QSpinBox* pSpinToleranceTime_s = new QSpinBox(this);
-    pSpinToleranceTime_s->setValue(m_nToleranceTime_s);
+    pSpinToleranceTime_s->setValue(UserTimeSettings::ToleranceTime_s());
     pSpinToleranceTime_s->setMaximum(999);
     connect(pSpinToleranceTime_s, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=](const int &nNewValue) {
-       m_nToleranceTime_s = nNewValue;
-       m_pAppSettings->setValue("tolerance_time", m_nToleranceTime_s);
+       UserTimeSettings::SetToleranceTime_s(nNewValue);
+       m_pAppSettings->setValue("tolerance_time", UserTimeSettings::ToleranceTime_s());
     });
     pToleranceLayout->addWidget(pToleranceLabel);
     pToleranceLayout->addWidget(pSpinToleranceTime_s);
@@ -113,6 +113,22 @@ void Widget::PostponeTheBreak()
     // TODO
 }
 
+void Widget::SetIconByTime()
+{
+    if(LastUserInput::UserIdleTime_ms() > UserTimeSettings::RestTime_s())
+    {
+        SetTrayIcon(":/go_icon.png");
+    }
+    if(LastUserInput::UserActiveTime_ms() / 1000 < UserTimeSettings::WorkTime_s() &&  LastUserInput::UserActiveTime_ms() / 1000 > (UserTimeSettings::WorkTime_s() - UserTimeSettings::WarningTime_s()))
+    {
+        SetTrayIcon(":/ready_icon.png");
+    }
+    if(LastUserInput::UserActiveTime_ms() / 1000 > UserTimeSettings::WorkTime_s())
+    {
+        SetTrayIcon(":/stop_icon.png");
+    }
+}
+
 Widget::Widget(QWidget *parent) : QWidget(parent)
 {
     CreateTrayIcon();
@@ -139,84 +155,29 @@ Widget::Widget(QWidget *parent) : QWidget(parent)
     });
 
     connect(&m_oBeepTimer, &QTimer::timeout, [=]() {
-        if(m_nUserActiveTime_ms / 1000 < m_nWorkTime_s &&  m_nUserActiveTime_ms / 1000 > (m_nWorkTime_s - m_nWarningTime_s))
+        if(LastUserInput::UserActiveTime_ms() / 1000 > UserTimeSettings::WorkTime_s())
         {
-            SetTrayIcon(":/ready_icon.png");
-        }
-        if(m_nUserActiveTime_ms / 1000 > m_nWorkTime_s)
-        {
-            if(m_nUserIdleTime_ms < 500)
+            if(LastUserInput::UserIdleTime_ms() < 500)
             {
                 QApplication::beep();
             }
-            SetTrayIcon(":/stop_icon.png");
         }
     });
 
     connect(&m_oTimer, &QTimer::timeout, [=]() {
 
-        LASTINPUTINFO lastInputInfo;
-        lastInputInfo.cbSize = sizeof(lastInputInfo);
-        if(GetLastInputInfo(&lastInputInfo))
-        {
-            quint32 nTickCount = GetTickCount();
+        SetIconByTime();
+        LastUserInput::UpdateLastUserInput();
 
-            if(m_nStartUserActiveTime_ms < 0)
-            {
-                m_nStartUserActiveTime_ms = nTickCount;
-                SetTrayIcon(":/go_icon.png");
-            }
+        m_pLabel->setText(QString("User idle time\t\t%1\nUser active time\t\t%2")
+                          .arg(QDateTime::fromTime_t(LastUserInput::UserIdleTime_ms() / 1000).toUTC().toString("mm:ss")).arg(QDateTime::fromTime_t(LastUserInput::UserActiveTime_ms() / 1000).toUTC().toString("mm:ss")));
 
-            if(m_nToleranceTime_s > 0 && m_nUserIdleTime_ms / 1000 > m_nToleranceTime_s)
-            {
-                if((nTickCount - lastInputInfo.dwTime) / 1000 < m_nToleranceTime_s && m_nPseudoStartLastUserInput_ms == -1)
-                {
-                    m_nPseudoStartLastUserInput_ms = lastInputInfo.dwTime;
-                }
-                else if((nTickCount - lastInputInfo.dwTime) / 1000 < m_nToleranceTime_s && (nTickCount - m_nPseudoStartLastUserInput_ms) / 1000 > m_nToleranceTime_s)
-                {
-                    m_nPseudoLastUserInput_ms = lastInputInfo.dwTime;
-                }
-                else if((nTickCount - lastInputInfo.dwTime) / 1000 > m_nToleranceTime_s)
-                {
-                    m_nPseudoStartLastUserInput_ms = -1;
-                }
-            }
-            else
-            {
-                m_nPseudoLastUserInput_ms = lastInputInfo.dwTime;
-            }
+        m_pTrayIcon->setToolTip(QString(tr("Work time is %1 mins")).arg(LastUserInput::UserActiveTime_ms() / (1000 * 60)));
 
-            m_nUserIdleTime_ms = nTickCount - m_nPseudoLastUserInput_ms;
-            m_nUserActiveTime_ms = nTickCount - m_nStartUserActiveTime_ms;
-
-            // if the user is idle for too long, reset counter
-            if(m_nUserIdleTime_ms / 1000 > m_nRestTime_s)
-            {
-                m_nStartUserActiveTime_ms = -1;
-            }
-
-
-            m_pLabel->setText(QString("The last user input time\t%1\nCurrent time\t\t%2\nUser idle time\t\t%3\nUser active time\t\t%4")
-                              .arg(lastInputInfo.dwTime).arg(nTickCount).arg(QDateTime::fromTime_t(m_nUserIdleTime_ms / 1000).toUTC().toString("mm:ss")).arg(QDateTime::fromTime_t(m_nUserActiveTime_ms / 1000).toUTC().toString("mm:ss")));
-
-            m_pTrayIcon->setToolTip(QString(tr("Work time is %1 mins")).arg(m_nUserActiveTime_ms / (1000 * 60)));
-
-            // FIXME - nezobrazuje víc než 59 minut
-        }
-        else
-        {
-             m_pLabel->setText("last-input-info error");
-        }
     });
 
     m_oTimer.start(100);
     m_oBeepTimer.start(1100);
-}
-
-Widget::~Widget()
-{
-
 }
 
 void Widget::closeEvent(QCloseEvent *event)
