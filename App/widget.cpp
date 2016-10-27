@@ -91,6 +91,14 @@ void Widget::CreateLayout()
 
     QVBoxLayout* pMainLayout = new QVBoxLayout;
     pMainLayout->addLayout(pTimeLayout);
+
+    m_pPassedToleranceBar = new QProgressBar(this);
+    m_pPassedToleranceBar->setMaximum(0);
+    m_pPassedToleranceBar->setMaximum(UserTimeSettings::ToleranceTime_s() * 1000);
+//    m_pPassedToleranceBar->setFormat(QString::number(LastUserInput::PassedTolerance_ms()));
+    m_pPassedToleranceBar->setTextVisible(false);
+
+    pMainLayout->addWidget(m_pPassedToleranceBar);
     pMainLayout->addWidget(m_pLabel);
     this->setLayout(pMainLayout);
 }
@@ -177,6 +185,9 @@ Widget::Widget(QWidget *parent) : QWidget(parent)
 
         SetIconByTime();
         LastUserInput::UpdateLastUserInput();
+
+        m_pPassedToleranceBar->setValue(LastUserInput::PassedTolerance_ms());
+
 
         m_pLabel->setText(QString("User idle time\t\t%1\nUser active time\t\t%2")
                           .arg(QDateTime::fromTime_t(LastUserInput::UserIdleTime_ms() / 1000).toUTC().toString("mm:ss")).arg(QDateTime::fromTime_t(LastUserInput::UserActiveTime_ms() / 1000).toUTC().toString("mm:ss")));

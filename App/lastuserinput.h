@@ -18,11 +18,14 @@ class LastUserInput
     static qint64 m_nUserActiveTime_ms;
     static qint64 m_nUserIdleTime_ms;
 
+    static qint64 m_nPassedTolerance_ms;
+
 public:
     static bool UpdateLastUserInput();
 
     static qint64 UserActiveTime_ms();
     static qint64 UserIdleTime_ms();
+    static qint32 PassedTolerance_ms();
 };
 
 #endif // LASTUSERINPUT_H
