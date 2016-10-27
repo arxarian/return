@@ -16,25 +16,28 @@ class Widget : public QWidget
 {
     Q_OBJECT
 
-    QLabel* m_pLabel;
+    QLabel* m_pLabel = 0;
 
-    QAction* m_pQuitAction;
-    QAction* m_pOpenAction;
-    QAction* m_pPostponeAction;
+    QAction* m_pQuitAction = 0;
+    QAction* m_pOpenAction = 0;
+    QAction* m_pPostponeAction = 0;
 
-    QSystemTrayIcon* m_pTrayIcon;
+    QSystemTrayIcon* m_pTrayIcon = 0;
 
     QTimer m_oTimer;
     QTimer m_oBeepTimer;
 
     QString m_strSetTrayIcon;
 
-    QSettings* m_pAppSettings;
+    QProgressBar* m_pPassedToleranceBar = 0;
+
+    QSettings* m_pAppSettings = 0;
 
     void CreateTrayIcon();
     void SetTrayIcon(QString strIcon);
     void LoadValues();
     void CreateLayout();
+    void CreateActions();
 
     void SetIconByTime();
 

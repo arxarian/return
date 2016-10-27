@@ -1,16 +1,7 @@
 #include "widget.h"
 
-void Widget::CreateTrayIcon() // TODO - mnoho věcí tato funkce dělá
+void Widget::CreateTrayIcon()
 {
-    m_pOpenAction = new QAction(tr("&Open"), this);
-    connect(m_pOpenAction, &QAction::triggered, this, &Widget::OpenWindow);
-
-    m_pPostponeAction = new QAction(tr("&Postpone the break"), this);
-    connect(m_pOpenAction, &QAction::triggered, this, &Widget::PostponeTheBreak);
-
-    m_pQuitAction = new QAction(tr("&Quit"), this);
-    connect(m_pQuitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
-
     QMenu* pTrayIconMenu = new QMenu(this);
     pTrayIconMenu->addAction(m_pOpenAction);
     pTrayIconMenu->addSeparator();
@@ -18,13 +9,15 @@ void Widget::CreateTrayIcon() // TODO - mnoho věcí tato funkce dělá
     pTrayIconMenu->addSeparator();
     pTrayIconMenu->addAction(m_pQuitAction);
 
-    m_pTrayIcon = new QSystemTrayIcon(this);
-    m_pTrayIcon->setContextMenu(pTrayIconMenu);
+    if(m_pTrayIcon)
+    {
+        m_pTrayIcon->setContextMenu(pTrayIconMenu);
+    }
 }
 
 void Widget::SetTrayIcon(QString strIcon)
 {
-    if(strIcon != m_strSetTrayIcon)
+    if(strIcon != m_strSetTrayIcon && m_pTrayIcon)
     {
         QIcon icon(strIcon);
         m_pTrayIcon->setIcon(icon);
@@ -83,6 +76,7 @@ void Widget::CreateLayout()
     connect(pSpinToleranceTime_s, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=](const int &nNewValue) {
        UserTimeSettings::SetToleranceTime_s(nNewValue);
        m_pAppSettings->setValue("tolerance_time", UserTimeSettings::ToleranceTime_s());
+
     });
     pToleranceLayout->addWidget(pToleranceLabel);
     pToleranceLayout->addWidget(pSpinToleranceTime_s);
@@ -99,6 +93,18 @@ void Widget::CreateLayout()
     pMainLayout->addLayout(pTimeLayout);
     pMainLayout->addWidget(m_pLabel);
     this->setLayout(pMainLayout);
+}
+
+void Widget::CreateActions()
+{
+    m_pOpenAction = new QAction(tr("&Open"), this);
+    connect(m_pOpenAction, &QAction::triggered, this, &Widget::OpenWindow);
+
+    m_pPostponeAction = new QAction(tr("&Postpone the break"), this);
+    connect(m_pOpenAction, &QAction::triggered, this, &Widget::PostponeTheBreak);
+
+    m_pQuitAction = new QAction(tr("&Quit"), this);
+    connect(m_pQuitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 }
 
 void Widget::OpenWindow()
@@ -131,6 +137,9 @@ void Widget::SetIconByTime()
 
 Widget::Widget(QWidget *parent) : QWidget(parent)
 {
+    m_pTrayIcon = new QSystemTrayIcon(this);
+
+    CreateActions();
     CreateTrayIcon();
     SetTrayIcon(":/go_icon.png");
 
