@@ -11,8 +11,12 @@
 
 class LastUserInput
 {
+    const static qint32 m_nCooldown_ms = 1000;
+
     static qint64 m_nPseudoLastUserInput_ms;
     static qint64 m_nPseudoStartLastUserInput_ms;
+
+    static qint64 m_nLastConfirmedUserInput_ms;
 
     static qint64 m_nStartUserActiveTime_ms;
     static qint64 m_nUserActiveTime_ms;
