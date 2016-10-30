@@ -9,6 +9,7 @@ class UserTimeSettings
     static qint32 m_nRestTime_s;
     static qint32 m_nWarningTime_s;
     static quint32 m_nToleranceTime_s;
+    static quint32 m_nExtraWorkTime_s;
 
 public:
     static qint32 WorkTime_s();
@@ -22,6 +23,8 @@ public:
 
     static quint32 ToleranceTime_s();
     static void SetToleranceTime_s(const quint32 &nToleranceTime_s);
+
+    static quint32 ExtraWorkTime_s();
 };
 
 #endif // USERTIMESETTINGS_H

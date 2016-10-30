@@ -20,7 +20,8 @@ SOURCES += main.cpp\
 
 HEADERS  += widget.h \
     lastuserinput.h \
-    usertimesettings.h
+    usertimesettings.h \
+    singleton.h
 
 LIBS += -lKernel32
 

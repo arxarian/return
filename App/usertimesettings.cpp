@@ -4,6 +4,7 @@ qint32 UserTimeSettings::m_nWorkTime_s = 25 * 60;
 qint32 UserTimeSettings::m_nRestTime_s = 5 * 60;
 qint32 UserTimeSettings::m_nWarningTime_s = 2 * 60;
 quint32 UserTimeSettings::m_nToleranceTime_s = 3;
+quint32 UserTimeSettings::m_nExtraWorkTime_s = 300;
 
 qint32 UserTimeSettings::RestTime_s()
 {
@@ -33,6 +34,11 @@ quint32 UserTimeSettings::ToleranceTime_s()
 void UserTimeSettings::SetToleranceTime_s(const quint32 &nToleranceTime_s)
 {
     m_nToleranceTime_s = nToleranceTime_s;
+}
+
+quint32 UserTimeSettings::ExtraWorkTime_s()
+{
+    return m_nExtraWorkTime_s;
 }
 
 qint32 UserTimeSettings::WorkTime_s()

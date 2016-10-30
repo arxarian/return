@@ -1,16 +1,5 @@
 #include "lastuserinput.h"
 
-qint64 LastUserInput::m_nPseudoLastUserInput_ms = -1;
-qint64 LastUserInput::m_nPseudoStartLastUserInput_ms = -1;
-
-qint64 LastUserInput::m_nLastConfirmedUserInput_ms = 0;
-
-qint64 LastUserInput::m_nStartUserActiveTime_ms = -1;
-qint64 LastUserInput::m_nUserActiveTime_ms = 0;
-qint64 LastUserInput::m_nUserIdleTime_ms = 0;
-
-qint64 LastUserInput::m_nPassedTolerance_ms = -1;
-
 qint64 LastUserInput::UserActiveTime_ms()
 {
     return m_nUserActiveTime_ms;
@@ -63,7 +52,7 @@ bool LastUserInput::UpdateLastUserInput()
         else
         {
             m_nPseudoStartLastUserInput_ms = -1;
-            m_nPassedTolerance_ms = 0;
+            m_nPassedTolerance_ms = 0;              // NOTE - update passed tolerance in this iteration (it's redundant)
             qDebug() << "reset";
         }
 
@@ -79,6 +68,7 @@ bool LastUserInput::UpdateLastUserInput()
         if(m_nUserIdleTime_ms >= UserTimeSettings::RestTime_s() * 1000)
         {
             m_nStartUserActiveTime_ms = -1;
+            emit NewWorkPeriod();
             qDebug() << "reseting idle time";
         }
 

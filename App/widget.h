@@ -16,6 +16,8 @@ class Widget : public QWidget
 {
     Q_OBJECT
 
+    LastUserInput m_oLastUserInput;
+
     QLabel* m_pLabel = 0;
 
     QAction* m_pQuitAction = 0;
@@ -32,6 +34,10 @@ class Widget : public QWidget
     QProgressBar* m_pPassedToleranceBar = 0;
 
     QSettings* m_pAppSettings = 0;
+
+    bool m_bBreakTaken = false;
+    qint32 m_nExtraWorkTime_ms = 0;
+
 
     void CreateTrayIcon();
     void SetTrayIcon(QString strIcon);
