@@ -1,21 +1,21 @@
-#include "lastuserinput.h"
+#include "userinputwatcher.h"
 
-qint64 LastUserInput::UserActiveTime_ms()
+qint64 UserInputWatcher::UserActiveTime_ms()
 {
     return m_nUserActiveTime_ms;
 }
 
-qint64 LastUserInput::UserIdleTime_ms()
+qint64 UserInputWatcher::UserIdleTime_ms()
 {
     return m_nUserIdleTime_ms;
 }
 
-qint32 LastUserInput::PassedTolerance_ms()
+qint32 UserInputWatcher::PassedTolerance_ms()
 {
     return m_nPassedTolerance_ms;
 }
 
-bool LastUserInput::UpdateLastUserInput()
+bool UserInputWatcher::UpdateLastUserInput()
 {
     LASTINPUTINFO lastInputInfo;
     lastInputInfo.cbSize = sizeof(lastInputInfo);

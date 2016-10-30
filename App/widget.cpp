@@ -200,7 +200,7 @@ Widget::Widget(QWidget *parent) : QWidget(parent)
 
     });
 
-    connect(&m_oLastUserInput, &LastUserInput::NewWorkPeriod, [=]() {
+    connect(&m_oLastUserInput, &UserInputWatcher::NewWorkPeriod, [=]() {
         m_nExtraWorkTime_ms = 0;
         m_bBreakTaken = false;
     });

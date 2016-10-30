@@ -9,14 +9,14 @@
 #include <QMenu>
 #include <QDebug>
 
-#include "lastuserinput.h"
+#include "userinputwatcher.h"
 #include "usertimesettings.h"
 
 class Widget : public QWidget
 {
     Q_OBJECT
 
-    LastUserInput m_oLastUserInput;
+    UserInputWatcher m_oLastUserInput;
 
     QLabel* m_pLabel = 0;
 

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,13 +13,15 @@ TEMPLATE = app
 
 CONFIG += c++11
 
-SOURCES += main.cpp\
-        widget.cpp \
-    lastuserinput.cpp \
+SOURCES += \
+    main.cpp\
+    widget.cpp \
+    userinputwatcher.cpp \
     usertimesettings.cpp
 
-HEADERS  += widget.h \
-    lastuserinput.h \
+HEADERS += \
+    widget.h \
+    userinputwatcher.h \
     usertimesettings.h \
     singleton.h
 

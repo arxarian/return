@@ -2,6 +2,7 @@
 #define LASTUSERINPUT_H
 
 #include <QtCore>
+#include <QObject>
 
 #include "windows.h"
 #include "winbase.h"
@@ -10,9 +11,11 @@
 #include "usertimesettings.h"
 #include "singleton.h"
 
-class LastUserInput : public QObject, public Singleton<LastUserInput>
+class UserInputWatcher : public QObject, public Singleton<UserInputWatcher>
 {
-    const qint32 m_nCooldown_ms = 1000;
+    Q_OBJECT
+
+    const quint32 m_nCooldown_ms = 1000;
 
     bool m_bBreakTaken = false;
 

@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
   x)      bug in tolerance setting (it counts plus one)
   y)      info about running in tray system
   w)      resetuje se bez pipani pri prekroceni worktime
+  z)      write unit tests
   */
 
 // http://doc.qt.io/qt-5/qtwidgets-desktop-systray-example.html
