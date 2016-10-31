@@ -17,13 +17,15 @@ SOURCES += \
     main.cpp\
     widget.cpp \
     userinputwatcher.cpp \
-    usertimesettings.cpp
+    usertimesettings.cpp \
+    systeminput.cpp
 
 HEADERS += \
     widget.h \
     userinputwatcher.h \
     usertimesettings.h \
-    singleton.h
+    singleton.h \
+    systeminput.h
 
 LIBS += -lKernel32
 

@@ -16,7 +16,7 @@ class Widget : public QWidget
 {
     Q_OBJECT
 
-    UserInputWatcher m_oLastUserInput;
+    UserInputWatcher* m_pLastUserInput;
 
     QLabel* m_pLabel = 0;
 

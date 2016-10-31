@@ -15,14 +15,23 @@ qint32 UserInputWatcher::PassedTolerance_ms()
     return m_nPassedTolerance_ms;
 }
 
+UserInputWatcher::UserInputWatcher(SystemInterface* pSystemInput)
+{
+    m_pSystemInterface.reset(pSystemInput);
+}
+
+UserInputWatcher::~UserInputWatcher()
+{
+    m_pSystemInterface.clear();
+}
+
 bool UserInputWatcher::UpdateLastUserInput()
 {
-    LASTINPUTINFO lastInputInfo;
-    lastInputInfo.cbSize = sizeof(lastInputInfo);
+    qint64 nLastInputTime_ms = 0;
 
-    if(GetLastInputInfo(&lastInputInfo))
+    if(m_pSystemInterface->LastUserInputTime_ms(nLastInputTime_ms))
     {
-        quint32 nTickCount = GetTickCount();
+        quint32 nTickCount = m_pSystemInterface->SystemTime_ms();
 
         if(m_nStartUserActiveTime_ms < 0)
         {
@@ -31,18 +40,18 @@ bool UserInputWatcher::UpdateLastUserInput()
 
         if(m_nPseudoLastUserInput_ms < 0)
         {
-            m_nPseudoLastUserInput_ms = lastInputInfo.dwTime;
+            m_nPseudoLastUserInput_ms = nLastInputTime_ms;
             qDebug() << "m_nPseudoLastUserInput_ms init";
         }
 
-        if(nTickCount - lastInputInfo.dwTime < m_nCooldown_ms)
+        if(nTickCount - nLastInputTime_ms < m_nCooldown_ms)
         {
-            if(m_nLastConfirmedUserInput_ms != lastInputInfo.dwTime)
+            if(m_nLastConfirmedUserInput_ms != nLastInputTime_ms)
             {
-                m_nLastConfirmedUserInput_ms = lastInputInfo.dwTime;
+                m_nLastConfirmedUserInput_ms = nLastInputTime_ms;
                 if(m_nPseudoStartLastUserInput_ms < 0)
                 {
-                    m_nPseudoStartLastUserInput_ms = lastInputInfo.dwTime;
+                    m_nPseudoStartLastUserInput_ms = nLastInputTime_ms;
                     qDebug() << "m_nPseudoStartLastUserInput_ms init";
                 }
                 m_nPassedTolerance_ms = nTickCount - m_nPseudoStartLastUserInput_ms;
@@ -58,7 +67,7 @@ bool UserInputWatcher::UpdateLastUserInput()
 
         if(m_nPassedTolerance_ms > UserTimeSettings::ToleranceTime_s() * 1000)
         {
-            m_nPseudoLastUserInput_ms = lastInputInfo.dwTime;
+            m_nPseudoLastUserInput_ms = nLastInputTime_ms;
             qDebug() << "tolerance exceeded";
         }
         m_nUserIdleTime_ms = nTickCount - m_nPseudoLastUserInput_ms;

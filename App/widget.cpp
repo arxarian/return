@@ -133,15 +133,15 @@ void Widget::PostponeTheBreak()
 void Widget::SetIconByTime()
 {
     int nWorkTime_ms = UserTimeSettings::WorkTime_s() * 1000 + m_nExtraWorkTime_ms;
-    if(m_oLastUserInput.UserIdleTime_ms() > UserTimeSettings::RestTime_s())
+    if(m_pLastUserInput->UserIdleTime_ms() > UserTimeSettings::RestTime_s())
     {
         SetTrayIcon(":/go_icon.png");
     }
-    if(m_oLastUserInput.UserActiveTime_ms() < nWorkTime_ms &&  m_oLastUserInput.UserActiveTime_ms() > (nWorkTime_ms - UserTimeSettings::WarningTime_s()) * 1000)
+    if(m_pLastUserInput->UserActiveTime_ms() < nWorkTime_ms &&  m_pLastUserInput->UserActiveTime_ms() > (nWorkTime_ms - UserTimeSettings::WarningTime_s()) * 1000)
     {
         SetTrayIcon(":/ready_icon.png");
     }
-    if(m_oLastUserInput.UserActiveTime_ms() > nWorkTime_ms)
+    if(m_pLastUserInput->UserActiveTime_ms() > nWorkTime_ms)
     {
         SetTrayIcon(":/stop_icon.png");
     }
@@ -149,6 +149,8 @@ void Widget::SetIconByTime()
 
 Widget::Widget(QWidget *parent) : QWidget(parent)
 {
+    m_pLastUserInput = new UserInputWatcher(new SystemInput());
+
     m_pTrayIcon = new QSystemTrayIcon(this);
 
     CreateActions();
@@ -177,9 +179,9 @@ Widget::Widget(QWidget *parent) : QWidget(parent)
 
     connect(&m_oBeepTimer, &QTimer::timeout, [=]() {
         int nWorkTime_ms = UserTimeSettings::WorkTime_s() * 1000 + m_nExtraWorkTime_ms;
-        if(m_oLastUserInput.UserActiveTime_ms() > nWorkTime_ms)
+        if(m_pLastUserInput->UserActiveTime_ms() > nWorkTime_ms)
         {
-            if(m_oLastUserInput.UserIdleTime_ms() < 500)
+            if(m_pLastUserInput->UserIdleTime_ms() < 500)
             {
                 QApplication::beep();
             }
@@ -189,18 +191,18 @@ Widget::Widget(QWidget *parent) : QWidget(parent)
     connect(&m_oTimer, &QTimer::timeout, [=]() {
 
         SetIconByTime();
-        m_oLastUserInput.UpdateLastUserInput();
+        m_pLastUserInput->UpdateLastUserInput();
 
-        m_pPassedToleranceBar->setValue(m_oLastUserInput.PassedTolerance_ms() > m_pPassedToleranceBar->maximum() ? m_pPassedToleranceBar->maximum() : m_oLastUserInput.PassedTolerance_ms());
+        m_pPassedToleranceBar->setValue(m_pLastUserInput->PassedTolerance_ms() > m_pPassedToleranceBar->maximum() ? m_pPassedToleranceBar->maximum() : m_pLastUserInput->PassedTolerance_ms());
 
         m_pLabel->setText(QString("User idle time\t\t%1\nUser active time\t\t%2")
-                          .arg(QDateTime::fromTime_t(m_oLastUserInput.UserIdleTime_ms() / 1000).toUTC().toString("mm:ss")).arg(QDateTime::fromTime_t(m_oLastUserInput.UserActiveTime_ms() / 1000).toUTC().toString("mm:ss")));
+                          .arg(QDateTime::fromTime_t(m_pLastUserInput->UserIdleTime_ms() / 1000).toUTC().toString("mm:ss")).arg(QDateTime::fromTime_t(m_pLastUserInput->UserActiveTime_ms() / 1000).toUTC().toString("mm:ss")));
 
-        m_pTrayIcon->setToolTip(QString(tr("Work time is %1 mins")).arg(m_oLastUserInput.UserActiveTime_ms() / (1000 * 60)));
+        m_pTrayIcon->setToolTip(QString(tr("Work time is %1 mins")).arg(m_pLastUserInput->UserActiveTime_ms() / (1000 * 60)));
 
     });
 
-    connect(&m_oLastUserInput, &UserInputWatcher::NewWorkPeriod, [=]() {
+    connect(m_pLastUserInput, &UserInputWatcher::NewWorkPeriod, [=]() {
         m_nExtraWorkTime_ms = 0;
         m_bBreakTaken = false;
     });

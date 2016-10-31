@@ -3,13 +3,11 @@
 
 #include <QtCore>
 #include <QObject>
-
-#include "windows.h"
-#include "winbase.h"
-#include <mmsystem.h>
+#include <QSharedPointer>
 
 #include "usertimesettings.h"
 #include "singleton.h"
+#include "systeminput.h"
 
 class UserInputWatcher : public QObject, public Singleton<UserInputWatcher>
 {
@@ -31,7 +29,12 @@ class UserInputWatcher : public QObject, public Singleton<UserInputWatcher>
 
     qint64 m_nPassedTolerance_ms = -1;
 
+    QSharedPointer<SystemInterface> m_pSystemInterface;
+
 public:
+    UserInputWatcher(SystemInterface *pSystemInput);
+    ~UserInputWatcher();
+
     bool UpdateLastUserInput();
 
     qint64 UserActiveTime_ms();
