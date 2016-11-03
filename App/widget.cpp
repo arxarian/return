@@ -179,12 +179,9 @@ Widget::Widget(QWidget *parent) : QWidget(parent)
 
     connect(&m_oBeepTimer, &QTimer::timeout, [=]() {
         int nWorkTime_ms = UserTimeSettings::WorkTime_s() * 1000 + m_nExtraWorkTime_ms;
-        if(m_pLastUserInput->UserActiveTime_ms() > nWorkTime_ms)
+        if(m_pLastUserInput->UserActiveTime_ms() > nWorkTime_ms && m_pLastUserInput->PassedTolerance_ms() > 0)
         {
-            if(m_pLastUserInput->UserIdleTime_ms() < 500)
-            {
-                QApplication::beep();
-            }
+            QApplication::beep();
         }
     });
 
