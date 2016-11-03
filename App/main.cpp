@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
   y)      info about running in tray system
   w)      resetuje se bez pipani pri prekroceni worktime
   z)      write unit tests
+  aa)     versioning - http://www.openguru.com/2009/11/qt-best-way-to-set-application-version.html
   */
 
 // http://doc.qt.io/qt-5/qtwidgets-desktop-systray-example.html
