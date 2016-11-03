@@ -108,7 +108,7 @@ void Widget::CreateActions()
     connect(m_pOpenAction, &QAction::triggered, this, &Widget::OpenWindow);
 
     m_pPostponeAction = new QAction(tr("&Add 5 mins"), this);
-    connect(m_pOpenAction, &QAction::triggered, this, &Widget::PostponeTheBreak);
+    connect(m_pPostponeAction, &QAction::triggered, this, &Widget::PostponeTheBreak);
 
     m_pQuitAction = new QAction(tr("&Quit"), this);
     connect(m_pQuitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
