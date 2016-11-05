@@ -110,7 +110,7 @@ void Widget::CreateActions()
     m_pPostponeAction = new QAction(tr("&Add 5 mins"), this);
     connect(m_pPostponeAction, &QAction::triggered, this, &Widget::PostponeTheBreak);
 
-    m_pQuitAction = new QAction(tr("&Quit"), this);
+    m_pQuitAction = new QAction(tr("Really &quit"), this);
     connect(m_pQuitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 }
 
@@ -133,17 +133,17 @@ void Widget::PostponeTheBreak()
 void Widget::SetIconByTime()
 {
     int nWorkTime_ms = UserTimeSettings::WorkTime_s() * 1000 + m_nExtraWorkTime_ms;
-    if(m_pLastUserInput->UserIdleTime_ms() > UserTimeSettings::RestTime_s())
-    {
-        SetTrayIcon(":/go_icon.png");
-    }
-    if(m_pLastUserInput->UserActiveTime_ms() < nWorkTime_ms &&  m_pLastUserInput->UserActiveTime_ms() > (nWorkTime_ms - UserTimeSettings::WarningTime_s()) * 1000)
-    {
-        SetTrayIcon(":/ready_icon.png");
-    }
     if(m_pLastUserInput->UserActiveTime_ms() > nWorkTime_ms)
     {
         SetTrayIcon(":/stop_icon.png");
+    }
+    else if(m_pLastUserInput->UserActiveTime_ms() < nWorkTime_ms &&  m_pLastUserInput->UserActiveTime_ms() > (nWorkTime_ms - UserTimeSettings::WarningTime_s()) * 1000)
+    {
+        SetTrayIcon(":/ready_icon.png");
+    }
+    else if(m_pLastUserInput->UserIdleTime_ms() > UserTimeSettings::RestTime_s())
+    {
+        SetTrayIcon(":/go_icon.png");
     }
 }
 
