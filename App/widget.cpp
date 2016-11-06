@@ -1,6 +1,6 @@
 #include "widget.h"
 
-void Widget::CreateTrayIcon()
+void MainWindow::CreateTrayIcon()
 {
     QMenu* pTrayIconMenu = new QMenu(this);
     pTrayIconMenu->addAction(m_pOpenAction);
@@ -15,7 +15,7 @@ void Widget::CreateTrayIcon()
     }
 }
 
-void Widget::SetTrayIcon(QString strIcon)
+void MainWindow::SetTrayIcon(QString strIcon)
 {
     if(strIcon != m_strSetTrayIcon && m_pTrayIcon)
     {
@@ -27,7 +27,7 @@ void Widget::SetTrayIcon(QString strIcon)
     }
 }
 
-void Widget::LoadValues()
+void MainWindow::LoadValues()
 {
     m_pAppSettings = new QSettings(QCoreApplication::organizationName(), QCoreApplication::applicationName(), this);
     qDebug() << QCoreApplication::organizationName() << QCoreApplication::applicationName();
@@ -37,7 +37,7 @@ void Widget::LoadValues()
     UserTimeSettings::SetToleranceTime_s(m_pAppSettings->value("tolerance_time", UserTimeSettings::ToleranceTime_s()).toInt());
 }
 
-void Widget::CreateLayout()
+void MainWindow::CreateLayout()
 {
     QVBoxLayout* pTimeLayout = new QVBoxLayout;
 
@@ -99,29 +99,52 @@ void Widget::CreateLayout()
 
     pMainLayout->addWidget(m_pPassedToleranceBar);
     pMainLayout->addWidget(m_pLabel);
-    this->setLayout(pMainLayout);
+
+    QWidget* pWidget = new QWidget(this);
+    pWidget->setLayout(pMainLayout);
+    this->setCentralWidget(pWidget);
 }
 
-void Widget::CreateActions()
+void MainWindow::CreateActions()
 {
     m_pOpenAction = new QAction(tr("&Open"), this);
-    connect(m_pOpenAction, &QAction::triggered, this, &Widget::OpenWindow);
+    connect(m_pOpenAction, &QAction::triggered, this, &MainWindow::OpenWindow);
 
     m_pPostponeAction = new QAction(tr("&Add 5 mins"), this);
-    connect(m_pPostponeAction, &QAction::triggered, this, &Widget::PostponeTheBreak);
+    connect(m_pPostponeAction, &QAction::triggered, this, &MainWindow::PostponeTheBreak);
+
+    m_pAboutAction = new QAction(tr("A&bout..."));
+    connect(m_pAboutAction, &QAction::triggered, qApp, &QApplication::aboutQt); // NOTE - change to about App
 
     m_pQuitAction = new QAction(tr("Really &quit"), this);
     connect(m_pQuitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
+
+    m_pOnTopAction = new QAction(tr("Always on &top"), this);
+    m_pOnTopAction->setCheckable(true);
+    connect(m_pOnTopAction, &QAction::triggered, this, &MainWindow::SetOnTop);
 }
 
-void Widget::OpenWindow()
+void MainWindow::CreateMenu()
+{
+    m_pAppMenu = menuBar()->addMenu(tr("&App"));
+    m_pAppMenu->addAction(m_pPostponeAction);
+    m_pAppMenu->addSeparator();
+    m_pAppMenu->addAction(m_pAboutAction);
+    m_pAppMenu->addSeparator();
+    m_pAppMenu->addAction(m_pQuitAction);
+
+    m_pOptionsMenu = menuBar()->addMenu(tr("&Options"));
+    m_pOptionsMenu->addAction(m_pOnTopAction);
+}
+
+void MainWindow::OpenWindow()
 {
     this->setWindowState(this->windowState() & ~Qt::WindowMinimized);
     this->show();
     this->activateWindow();
 }
 
-void Widget::PostponeTheBreak()
+void MainWindow::PostponeTheBreak()
 {
     if(!m_bBreakTaken)
     {
@@ -130,7 +153,21 @@ void Widget::PostponeTheBreak()
     }
 }
 
-void Widget::SetIconByTime()
+void MainWindow::SetOnTop(bool bOnTop)
+{
+    if(bOnTop)
+    {
+        this->setWindowFlags(Qt::WindowStaysOnTopHint);
+    }
+    else
+    {
+        this->setWindowFlags(this->windowFlags() & (~Qt::WindowStaysOnTopHint));
+    }
+    this->show();
+    this->activateWindow();
+}
+
+void MainWindow::SetIconByTime()
 {
     int nWorkTime_ms = UserTimeSettings::WorkTime_s() * 1000 + m_nExtraWorkTime_ms;
     if(m_pLastUserInput->UserActiveTime_ms() > nWorkTime_ms)
@@ -147,7 +184,7 @@ void Widget::SetIconByTime()
     }
 }
 
-Widget::Widget(QWidget *parent) : QWidget(parent)
+MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
 {
     m_pLastUserInput = new UserInputWatcher(new SystemInput());
 
@@ -159,6 +196,7 @@ Widget::Widget(QWidget *parent) : QWidget(parent)
 
     LoadValues();
     CreateLayout();
+    CreateMenu();
 
     if(QSystemTrayIcon::isSystemTrayAvailable())
     {
@@ -208,7 +246,7 @@ Widget::Widget(QWidget *parent) : QWidget(parent)
     m_oBeepTimer.start(1100);
 }
 
-void Widget::closeEvent(QCloseEvent *event)
+void MainWindow::closeEvent(QCloseEvent *event)
 {
     if(m_pTrayIcon->isVisible())
     {

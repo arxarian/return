@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("ar_projects");
     QCoreApplication::setApplicationName("StopNotebook");
 
-    Widget w;
+    MainWindow w;
     w.show();
 
     return a.exec();
@@ -31,12 +31,13 @@ int main(int argc, char *argv[])
   p)      sound signalisation (on rest time, on the start of work period)
   q)      united graphics
   r)      little numbers of times?
-  q)      menu
+  q) in - menu
   u)      better name
-  v)      always on top
+  v) ok - always on top
   x)      bug in tolerance setting (it counts plus one, does it still?)
   y)      info about running in tray system
   z)      write unit tests
+
   aa)     versioning - http://www.openguru.com/2009/11/qt-best-way-to-set-application-version.html
   ab)     neprodávat to za $25
   ac)     nezaměřovat to přímo na RSI, ale jsou i jiné problémy (např. protáhnout si nohy, zakroutit hlavou => vybízí to k sepsání několika tipů (nechtěl jsem napsat něco jiného?))

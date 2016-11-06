@@ -12,7 +12,7 @@
 #include "userinputwatcher.h"
 #include "usertimesettings.h"
 
-class Widget : public QWidget
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
@@ -20,9 +20,14 @@ class Widget : public QWidget
 
     QLabel* m_pLabel = 0;
 
+    QMenu* m_pAppMenu = 0;
+    QMenu* m_pOptionsMenu = 0;
+
     QAction* m_pQuitAction = 0;
     QAction* m_pOpenAction = 0;
     QAction* m_pPostponeAction = 0;
+    QAction* m_pAboutAction = 0;
+    QAction* m_pOnTopAction = 0;
 
     QSystemTrayIcon* m_pTrayIcon = 0;
 
@@ -44,12 +49,13 @@ class Widget : public QWidget
     void LoadValues();
     void CreateLayout();
     void CreateActions();
+    void CreateMenu();
 
     void SetIconByTime();
 
 public:
-    Widget(QWidget *parent = 0);
-    ~Widget() {}
+    MainWindow(QMainWindow *parent = 0);
+    ~MainWindow() {}
 
     // QWidget interface
 protected:
@@ -58,6 +64,7 @@ protected:
 private slots:
     void OpenWindow();
     void PostponeTheBreak();
+    void SetOnTop(bool bOnTop);
 };
 
 #endif // WIDGET_H
