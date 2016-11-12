@@ -116,6 +116,7 @@ void MainWindow::CreateActions()
     connect(m_pOpenAction, &QAction::triggered, this, &MainWindow::OpenWindow);
 
     m_pPostponeAction = new QAction(tr("&Add 5 mins"), this);
+    m_pPostponeAction->setCheckable(true);
     connect(m_pPostponeAction, &QAction::triggered, this, &MainWindow::PostponeTheBreak);
 
     m_pAboutAction = new QAction(tr("A&bout..."), this);
@@ -162,11 +163,8 @@ void MainWindow::OpenWindow()
 
 void MainWindow::PostponeTheBreak()
 {
-    if(!m_bBreakTaken)
-    {
-        m_bBreakTaken = true;
-        m_nExtraWorkTime_ms = UserTimeSettings::ExtraWorkTime_s() * 1000;
-    }
+    m_pPostponeAction->setEnabled(false);
+    m_nExtraWorkTime_ms = UserTimeSettings::ExtraWorkTime_s() * 1000;
 }
 
 void MainWindow::SetOnTop(bool bOnTop)
@@ -269,8 +267,8 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
     });
 
     connect(m_pLastUserInput, &UserInputWatcher::NewWorkPeriod, [&]() {
+        m_pPostponeAction->setEnabled(true);
         m_nExtraWorkTime_ms = 0;
-        m_bBreakTaken = false;
     });
 
     m_oTimer.start(100);

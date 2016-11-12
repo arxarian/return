@@ -43,9 +43,7 @@ class MainWindow : public QMainWindow
 
     QSettings* m_pAppSettings = 0;
 
-    bool m_bBreakTaken = false;
     qint32 m_nExtraWorkTime_ms = 0;
-
 
     void CreateTrayIcon();
     void SetTrayIcon(QString strIcon);
