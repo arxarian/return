@@ -41,7 +41,7 @@ bool UserInputWatcher::UpdateLastUserInput()
         if(m_nPseudoLastUserInput_ms < 0)
         {
             m_nPseudoLastUserInput_ms = nLastInputTime_ms;
-            qDebug() << "m_nPseudoLastUserInput_ms init";
+            // qDebug() << "m_nPseudoLastUserInput_ms init";
         }
 
         if(nTickCount - nLastInputTime_ms < m_nCooldown_ms)
@@ -52,23 +52,23 @@ bool UserInputWatcher::UpdateLastUserInput()
                 if(m_nPseudoStartLastUserInput_ms < 0)
                 {
                     m_nPseudoStartLastUserInput_ms = nLastInputTime_ms;
-                    qDebug() << "m_nPseudoStartLastUserInput_ms init";
+                    // qDebug() << "m_nPseudoStartLastUserInput_ms init";
                 }
                 m_nPassedTolerance_ms = nTickCount - m_nPseudoStartLastUserInput_ms;
-                qDebug() << "passed tolerance " << m_nPassedTolerance_ms;
+                // qDebug() << "passed tolerance " << m_nPassedTolerance_ms;
             }
         }
         else
         {
             m_nPseudoStartLastUserInput_ms = -1;
             m_nPassedTolerance_ms = 0;              // NOTE - update passed tolerance in this iteration (it's redundant)
-            qDebug() << "reset";
+            // qDebug() << "reset";
         }
 
         if(m_nPassedTolerance_ms > UserTimeSettings::ToleranceTime_s() * 1000)
         {
             m_nPseudoLastUserInput_ms = nLastInputTime_ms;
-            qDebug() << "tolerance exceeded";
+            // qDebug() << "tolerance exceeded";
         }
         m_nUserIdleTime_ms = nTickCount - m_nPseudoLastUserInput_ms;
         m_nUserActiveTime_ms = nTickCount - m_nStartUserActiveTime_ms;
@@ -78,7 +78,7 @@ bool UserInputWatcher::UpdateLastUserInput()
         {
             m_nStartUserActiveTime_ms = -1;
             emit NewWorkPeriod();
-            qDebug() << "reseting idle time";
+            // qDebug() << "reseting idle time";
         }
 
         return true;

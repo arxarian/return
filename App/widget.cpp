@@ -52,7 +52,7 @@ void MainWindow::CreateLayout()
     QSpinBox* pSpinWorkTime_s = new QSpinBox(this); // TODO - má tu být this? Nemá tu být některý child?
     pSpinWorkTime_s->setValue(UserTimeSettings::WorkTime_s() / 60);
     pSpinWorkTime_s->setMaximum(999);
-    connect(pSpinWorkTime_s, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=](const int &nNewValue) {
+    connect(pSpinWorkTime_s, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&](const int &nNewValue) {
         UserTimeSettings::SetWorkTime_s(nNewValue * 60);
         m_pAppSettings->setValue("work_time", UserTimeSettings::WorkTime_s());
     });
@@ -65,7 +65,7 @@ void MainWindow::CreateLayout()
     QSpinBox* pSpinRestTime_s = new QSpinBox(this);
     pSpinRestTime_s->setValue(UserTimeSettings::RestTime_s() / 60);
     pSpinRestTime_s->setMaximum(999);
-    connect(pSpinRestTime_s, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=](const int &nNewValue) {
+    connect(pSpinRestTime_s, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&](const int &nNewValue) {
        UserTimeSettings::SetRestTime_s(nNewValue * 60);
        m_pAppSettings->setValue("rest_time", UserTimeSettings::RestTime_s());
     });
@@ -78,7 +78,7 @@ void MainWindow::CreateLayout()
     QSpinBox* pSpinToleranceTime_s = new QSpinBox(this);
     pSpinToleranceTime_s->setValue(UserTimeSettings::ToleranceTime_s());
     pSpinToleranceTime_s->setMaximum(999);
-    connect(pSpinToleranceTime_s, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=](const int &nNewValue) {
+    connect(pSpinToleranceTime_s, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&](const int &nNewValue) {
        UserTimeSettings::SetToleranceTime_s(nNewValue);
        m_pAppSettings->setValue("tolerance_time", UserTimeSettings::ToleranceTime_s());
 
@@ -126,14 +126,14 @@ void MainWindow::CreateActions()
 
     m_pOnTopAction = new QAction(tr("Always on &top"), this);
     m_pOnTopAction->setCheckable(true);
-    connect(m_pOnTopAction, &QAction::triggered, [=](bool bOnTop) {
+    connect(m_pOnTopAction, &QAction::triggered, [&](bool bOnTop) {
         m_pAppSettings->setValue("always_on_top", bOnTop);
         SetOnTop(bOnTop);
     });
 
     m_pOnStartUpAction = new QAction(tr("Run on &startup"), this);
     m_pOnStartUpAction->setCheckable(true);
-    connect(m_pOnStartUpAction, &QAction::triggered, [=](bool bRunOnStartUp) {
+    connect(m_pOnStartUpAction, &QAction::triggered, [&](bool bRunOnStartUp) {
         m_pAppSettings->setValue("run_on_startup", bRunOnStartUp);
         SetOnStartUp(bRunOnStartUp);
     });
@@ -233,7 +233,7 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
         qDebug() << "tray is avaible";
     }
 
-    connect(m_pTrayIcon, &QSystemTrayIcon::activated, [=](QSystemTrayIcon::ActivationReason eReason) {
+    connect(m_pTrayIcon, &QSystemTrayIcon::activated, [&](QSystemTrayIcon::ActivationReason eReason) {
         qDebug() << eReason;
         switch (eReason) {
         case QSystemTrayIcon::DoubleClick:
@@ -245,7 +245,7 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
         }
     });
 
-    connect(&m_oBeepTimer, &QTimer::timeout, [=]() {
+    connect(&m_oBeepTimer, &QTimer::timeout, [&]() {
         int nWorkTime_ms = UserTimeSettings::WorkTime_s() * 1000 + m_nExtraWorkTime_ms;
         if(m_pLastUserInput->UserActiveTime_ms() > nWorkTime_ms && m_pLastUserInput->PassedTolerance_ms() > 0)
         {
@@ -253,7 +253,7 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
         }
     });
 
-    connect(&m_oTimer, &QTimer::timeout, [=]() {
+    connect(&m_oTimer, &QTimer::timeout, [&]() {
 
         SetIconByTime();
         m_pLastUserInput->UpdateLastUserInput();
@@ -267,7 +267,7 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
 
     });
 
-    connect(m_pLastUserInput, &UserInputWatcher::NewWorkPeriod, [=]() {
+    connect(m_pLastUserInput, &UserInputWatcher::NewWorkPeriod, [&]() {
         m_nExtraWorkTime_ms = 0;
         m_bBreakTaken = false;
     });
