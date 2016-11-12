@@ -20,13 +20,14 @@ int main(int argc, char *argv[])
   a) ok - volitelný čas práce 0 - xx minut
   b) ok - volitelný čas přestávky
   c) ok - schovat do tray baru, obnovit z traybaru
+  d)      about (version info, author name, home page, ect)
   e) ok - kontext menu na pravé kliknutí (možnost Really Exit, add 5 minutes, open)
   w) ok - saving data in QSettings
   h)      update over internet
   i) ok - tolerance - např. stisknutí klávesy nezastaví cooldown (zastaví, pokud není nucená pauza)
   j)      okénko pro test reporty a feedback over internet a donate (paypal, bitcoin, ...)
   k)      hezčí a nativní grafika
-  m)      run at startup checkbox - http://stackoverflow.com/questions/9534415/run-application-on-startup (C:\Users\hubnerp\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup)
+  m) ok - run at startup checkbox
   o)      event driven
   p)      sound signalisation (on rest time, on the start of work period)
   q)      united graphics

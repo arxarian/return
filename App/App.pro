@@ -25,7 +25,8 @@ HEADERS += \
     userinputwatcher.h \
     usertimesettings.h \
     singleton.h \
-    systeminput.h
+    systeminput.h \
+    timeformat.h
 
 LIBS += -lKernel32
 

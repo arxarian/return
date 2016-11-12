@@ -12,6 +12,7 @@
 
 #include "userinputwatcher.h"
 #include "usertimesettings.h"
+#include "timeformat.h"
 
 class MainWindow : public QMainWindow
 {
@@ -54,8 +55,6 @@ class MainWindow : public QMainWindow
     void CreateMenu();
 
     void SetIconByTime();
-
-    QString GetMinsAndSeconds(qint64 nTime_ms);
 
 public:
     MainWindow(QMainWindow *parent = 0);
