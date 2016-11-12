@@ -55,6 +55,8 @@ class MainWindow : public QMainWindow
 
     void SetIconByTime();
 
+    QString GetMinsAndSeconds(qint64 nTime_ms);
+
 public:
     MainWindow(QMainWindow *parent = 0);
     ~MainWindow() {}

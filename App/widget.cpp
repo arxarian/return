@@ -214,6 +214,14 @@ void MainWindow::SetIconByTime()
     }
 }
 
+QString MainWindow::GetMinsAndSeconds(qint64 nTime_ms)
+{
+    qint64 nTime_s = nTime_ms / 1000;
+    qint32 nMins = nTime_s / 60;
+    qint32 nSeconds = nTime_s % 60;;
+    return QString("%1:%2").arg(nMins).arg(nSeconds, 2, 10, QChar('0'));
+}
+
 MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
 {
     m_pLastUserInput = new UserInputWatcher(new SystemInput());
@@ -261,7 +269,8 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
         m_pPassedToleranceBar->setValue(m_pLastUserInput->PassedTolerance_ms() > m_pPassedToleranceBar->maximum() ? m_pPassedToleranceBar->maximum() : m_pLastUserInput->PassedTolerance_ms());
 
         m_pLabel->setText(QString("User idle time\t\t%1\nUser active time\t\t%2")
-                          .arg(QDateTime::fromTime_t(m_pLastUserInput->UserIdleTime_ms() / 1000).toUTC().toString("mm:ss")).arg(QDateTime::fromTime_t(m_pLastUserInput->UserActiveTime_ms() / 1000).toUTC().toString("mm:ss")));
+                          .arg(GetMinsAndSeconds(m_pLastUserInput->UserIdleTime_ms()))
+                          .arg(GetMinsAndSeconds(m_pLastUserInput->UserActiveTime_ms())));
 
         m_pTrayIcon->setToolTip(QString(tr("Work time is %1 mins")).arg(m_pLastUserInput->UserActiveTime_ms() / (1000 * 60)));
 

@@ -20,7 +20,6 @@ int main(int argc, char *argv[])
   a) ok - volitelný čas práce 0 - xx minut
   b) ok - volitelný čas přestávky
   c) ok - schovat do tray baru, obnovit z traybaru
-  d)      idle time neukazuje pres hodinu
   e) ok - kontext menu na pravé kliknutí (možnost Really Exit, add 5 minutes, open)
   w) ok - saving data in QSettings
   h)      update over internet
