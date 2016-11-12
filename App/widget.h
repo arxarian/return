@@ -8,6 +8,7 @@
 #include <QtWidgets>
 #include <QMenu>
 #include <QDebug>
+#include <QDir>
 
 #include "userinputwatcher.h"
 #include "usertimesettings.h"
@@ -28,6 +29,7 @@ class MainWindow : public QMainWindow
     QAction* m_pPostponeAction = 0;
     QAction* m_pAboutAction = 0;
     QAction* m_pOnTopAction = 0;
+    QAction* m_pOnStartUpAction = 0;
 
     QSystemTrayIcon* m_pTrayIcon = 0;
 
@@ -46,7 +48,7 @@ class MainWindow : public QMainWindow
 
     void CreateTrayIcon();
     void SetTrayIcon(QString strIcon);
-    void LoadValues();
+    void LoadSettings();
     void CreateLayout();
     void CreateActions();
     void CreateMenu();
@@ -65,6 +67,7 @@ private slots:
     void OpenWindow();
     void PostponeTheBreak();
     void SetOnTop(bool bOnTop);
+    void SetOnStartUp(bool bRunOnStartUp);
 };
 
 #endif // WIDGET_H

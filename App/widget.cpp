@@ -27,7 +27,7 @@ void MainWindow::SetTrayIcon(QString strIcon)
     }
 }
 
-void MainWindow::LoadValues()
+void MainWindow::LoadSettings()
 {
     m_pAppSettings = new QSettings(QCoreApplication::organizationName(), QCoreApplication::applicationName(), this);
     qDebug() << QCoreApplication::organizationName() << QCoreApplication::applicationName();
@@ -35,6 +35,11 @@ void MainWindow::LoadValues()
     UserTimeSettings::SetWorkTime_s(m_pAppSettings->value("work_time", UserTimeSettings::WorkTime_s()).toInt());
     UserTimeSettings::SetRestTime_s(m_pAppSettings->value("rest_time", UserTimeSettings::RestTime_s()).toInt());
     UserTimeSettings::SetToleranceTime_s(m_pAppSettings->value("tolerance_time", UserTimeSettings::ToleranceTime_s()).toInt());
+
+    m_pOnTopAction->setChecked(m_pAppSettings->value("always_on_top", false).toBool());
+    SetOnTop(m_pOnTopAction->isChecked());
+
+    m_pOnStartUpAction->setChecked(m_pAppSettings->value("run_on_startup", false).toBool());
 }
 
 void MainWindow::CreateLayout()
@@ -113,7 +118,7 @@ void MainWindow::CreateActions()
     m_pPostponeAction = new QAction(tr("&Add 5 mins"), this);
     connect(m_pPostponeAction, &QAction::triggered, this, &MainWindow::PostponeTheBreak);
 
-    m_pAboutAction = new QAction(tr("A&bout..."));
+    m_pAboutAction = new QAction(tr("A&bout..."), this);
     connect(m_pAboutAction, &QAction::triggered, qApp, &QApplication::aboutQt); // NOTE - change to about App
 
     m_pQuitAction = new QAction(tr("Really &quit"), this);
@@ -121,7 +126,17 @@ void MainWindow::CreateActions()
 
     m_pOnTopAction = new QAction(tr("Always on &top"), this);
     m_pOnTopAction->setCheckable(true);
-    connect(m_pOnTopAction, &QAction::triggered, this, &MainWindow::SetOnTop);
+    connect(m_pOnTopAction, &QAction::triggered, [=](bool bOnTop) {
+        m_pAppSettings->setValue("always_on_top", bOnTop);
+        SetOnTop(bOnTop);
+    });
+
+    m_pOnStartUpAction = new QAction(tr("Run on &startup"), this);
+    m_pOnStartUpAction->setCheckable(true);
+    connect(m_pOnStartUpAction, &QAction::triggered, [=](bool bRunOnStartUp) {
+        m_pAppSettings->setValue("run_on_startup", bRunOnStartUp);
+        SetOnStartUp(bRunOnStartUp);
+    });
 }
 
 void MainWindow::CreateMenu()
@@ -135,6 +150,7 @@ void MainWindow::CreateMenu()
 
     m_pOptionsMenu = menuBar()->addMenu(tr("&Options"));
     m_pOptionsMenu->addAction(m_pOnTopAction);
+    m_pOptionsMenu->addAction(m_pOnStartUpAction);
 }
 
 void MainWindow::OpenWindow()
@@ -167,6 +183,20 @@ void MainWindow::SetOnTop(bool bOnTop)
     this->activateWindow();
 }
 
+void MainWindow::SetOnStartUp(bool bRunOnStartUp)
+{
+    QSettings oSettings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
+    if (bRunOnStartUp)
+    {
+        const QString strNativeBinPath = QDir::toNativeSeparators(qApp->applicationFilePath());
+        oSettings.setValue(QCoreApplication::applicationName(), strNativeBinPath);
+    }
+    else
+    {
+        oSettings.remove(QCoreApplication::applicationName());
+    }
+}
+
 void MainWindow::SetIconByTime()
 {
     int nWorkTime_ms = UserTimeSettings::WorkTime_s() * 1000 + m_nExtraWorkTime_ms;
@@ -194,9 +224,9 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
     CreateTrayIcon();
     SetTrayIcon(":/go_icon.png");
 
-    LoadValues();
     CreateLayout();
     CreateMenu();
+    LoadSettings();
 
     if(QSystemTrayIcon::isSystemTrayAvailable())
     {
