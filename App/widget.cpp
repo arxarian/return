@@ -222,9 +222,9 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
     CreateTrayIcon();
     SetTrayIcon(":/go_icon.png");
 
+    LoadSettings();
     CreateLayout();
     CreateMenu();
-    LoadSettings();
 
     if(QSystemTrayIcon::isSystemTrayAvailable())
     {
