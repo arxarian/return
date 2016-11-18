@@ -268,6 +268,7 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
 
     connect(m_pLastUserInput, &UserInputWatcher::NewWorkPeriod, [&]() {
         m_pPostponeAction->setEnabled(true);
+        m_pPostponeAction->setChecked(false);
         m_nExtraWorkTime_ms = 0;
     });
 
