@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
   h)      update over internet (check at least)
   i) ok - tolerance - např. stisknutí klávesy nezastaví cooldown (zastaví, pokud není nucená pauza)
   j)      okénko pro test reporty a feedback over internet a donate (paypal, bitcoin, ...)
-  k)      hezčí a nativní grafika
+  k)      hezčí a nativní grafika (a udělat něco s tím zvětšením aplikace, např. lépe navázat na sebe prvky nebo to rovnou zakázat)
   m) ok - run at startup checkbox
   o)      event driven
   p)      sound signalisation (on rest time, on the start of work period)
@@ -35,7 +35,6 @@ int main(int argc, char *argv[])
   q) in - menu
   u)      better name
   v) ok - always on top
-  x)      bug in tolerance setting (it counts plus one, does it still?)
   y)      info about running in tray system
   z)      write unit tests
 
