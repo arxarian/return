@@ -20,7 +20,7 @@ class MainWindow : public QMainWindow
 
     UserInputWatcher* m_pLastUserInput;
 
-    QLabel* m_pLabel = 0;
+    QLabel* m_pTimeInfoLabel = 0;
 
     QMenu* m_pAppMenu = 0;
     QMenu* m_pOptionsMenu = 0;

@@ -91,9 +91,6 @@ void MainWindow::CreateLayout()
     pTimeLayout->addLayout(pRestLayout);
     pTimeLayout->addLayout(pToleranceLayout);
 
-    // add label with info
-    m_pLabel = new QLabel;
-
     QVBoxLayout* pMainLayout = new QVBoxLayout;
     pMainLayout->addLayout(pTimeLayout);
 
@@ -103,7 +100,18 @@ void MainWindow::CreateLayout()
     m_pPassedToleranceBar->setTextVisible(false);
 
     pMainLayout->addWidget(m_pPassedToleranceBar);
-    pMainLayout->addWidget(m_pLabel);
+
+    // add label with info
+    QHBoxLayout* pInfoLayout = new QHBoxLayout;
+    QLabel* pLabel = new QLabel;
+    pLabel->setText(tr("User idle time\nUser active time"));
+    m_pTimeLabel = new QLabel;
+    m_pTimeLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+    pInfoLayout->addWidget(pLabel);
+    pInfoLayout->addWidget(m_pTimeLabel);
+
+    pMainLayout->addLayout(pInfoLayout);
 
     QWidget* pWidget = new QWidget(this);
     pWidget->setLayout(pMainLayout);
@@ -258,7 +266,7 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
 
         m_pPassedToleranceBar->setValue(m_pLastUserInput->PassedTolerance_ms() > m_pPassedToleranceBar->maximum() ? m_pPassedToleranceBar->maximum() : m_pLastUserInput->PassedTolerance_ms());
 
-        m_pLabel->setText(QString("User idle time\t\t%1\nUser active time\t\t%2")
+        m_pTimeLabel->setText(QString("%1\n%2")
                           .arg(TimeFormat::GetMinsAndSeconds(m_pLastUserInput->UserIdleTime_ms()))
                           .arg(TimeFormat::GetMinsAndSeconds(m_pLastUserInput->UserActiveTime_ms())));
 

@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
   d)      about (version info, author name, home page, ect)
   e) ok - kontext menu na pravé kliknutí (možnost Really Exit, add 5 minutes, open)
   w) ok - saving data in QSettings
-  h)      update over internet
+  h)      update over internet (check at least)
   i) ok - tolerance - např. stisknutí klávesy nezastaví cooldown (zastaví, pokud není nucená pauza)
   j)      okénko pro test reporty a feedback over internet a donate (paypal, bitcoin, ...)
   k)      hezčí a nativní grafika
