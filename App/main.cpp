@@ -6,9 +6,11 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     QCoreApplication::setOrganizationName("ar_projects");
-    QCoreApplication::setApplicationName("StopNotebook");
+    QCoreApplication::setApplicationName(APP_NAME);
 
     MainWindow w;
+    w.setWindowTitle(QString("%1 %2").arg(APP_NAME).arg(APP_VERSION));
+    w.setWindowIcon(QIcon(":/appicon.ico"));
     w.show();
 
     return a.exec();
@@ -22,10 +24,11 @@ int main(int argc, char *argv[])
   c) ok - schovat do tray baru, obnovit z traybaru
   d)      about (version info, author name, home page, ect)
   e) ok - kontext menu na pravé kliknutí (možnost Really Exit, add 5 minutes, open)
-  w) ok - saving data in QSettings
+  f)      add app binary icon
   h)      update over internet (check at least)
   i) ok - tolerance - např. stisknutí klávesy nezastaví cooldown (zastaví, pokud není nucená pauza)
   j)      okénko pro test reporty a feedback over internet a donate (paypal, bitcoin, ...)
+  f)      pamatovat si pozici, kde se má aplikace spouštět (jak to funguje u dvou monitorů?)
   k)      hezčí a nativní grafika (a udělat něco s tím zvětšením aplikace, např. lépe navázat na sebe prvky nebo to rovnou zakázat)
   m) ok - run at startup checkbox
   o)      event driven
@@ -36,6 +39,7 @@ int main(int argc, char *argv[])
   u)      better name
   v) ok - always on top
   y)      info about running in tray system
+  w) ok - saving data in QSettings
   z)      write unit tests
 
   aa)     versioning - http://www.openguru.com/2009/11/qt-best-way-to-set-application-version.html

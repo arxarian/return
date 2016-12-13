@@ -29,17 +29,19 @@ void MainWindow::SetTrayIcon(QString strIcon)
 
 void MainWindow::LoadSettings()
 {
-    m_pAppSettings = new QSettings(QCoreApplication::organizationName(), QCoreApplication::applicationName(), this);
-    qDebug() << QCoreApplication::organizationName() << QCoreApplication::applicationName();
+    qint32 nWorkTime_s = m_pSettingStrorage->RestoreWorkTime_s();
+    UserTimeSettings::SetWorkTime_s(nWorkTime_s < 0 ? UserTimeSettings::WorkTime_s() : nWorkTime_s);
 
-    UserTimeSettings::SetWorkTime_s(m_pAppSettings->value("work_time", UserTimeSettings::WorkTime_s()).toInt());
-    UserTimeSettings::SetRestTime_s(m_pAppSettings->value("rest_time", UserTimeSettings::RestTime_s()).toInt());
-    UserTimeSettings::SetToleranceTime_s(m_pAppSettings->value("tolerance_time", UserTimeSettings::ToleranceTime_s()).toInt());
+    qint32 nRestTime_s = m_pSettingStrorage->RestoreRestTime_s();
+    UserTimeSettings::SetRestTime_s(nRestTime_s < 0 ? UserTimeSettings::RestTime_s() : nRestTime_s);
 
-    m_pOnTopAction->setChecked(m_pAppSettings->value("always_on_top", false).toBool());
+    qint32 nToleranceTime_s = m_pSettingStrorage->RestoreToleranceTime_s();
+    UserTimeSettings::SetToleranceTime_s(nToleranceTime_s < 0 ? UserTimeSettings::ToleranceTime_s() : nToleranceTime_s);
+
+    m_pOnTopAction->setChecked(m_pSettingStrorage->RestoreAlwaysOnTop());
     SetOnTop(m_pOnTopAction->isChecked());
 
-    m_pOnStartUpAction->setChecked(m_pAppSettings->value("run_on_startup", false).toBool());
+    m_pOnStartUpAction->setChecked(m_pSettingStrorage->RestoreRunOnStartUp());
 }
 
 void MainWindow::CreateLayout()
@@ -54,7 +56,7 @@ void MainWindow::CreateLayout()
     pSpinWorkTime_s->setMaximum(999);
     connect(pSpinWorkTime_s, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&](const int &nNewValue) {
         UserTimeSettings::SetWorkTime_s(nNewValue * 60);
-        m_pAppSettings->setValue("work_time", UserTimeSettings::WorkTime_s());
+        m_pSettingStrorage->StoreWorkTime_s(UserTimeSettings::WorkTime_s());
     });
     pWorkLayout->addWidget(pWorkLabel);
     pWorkLayout->addWidget(pSpinWorkTime_s);
@@ -67,7 +69,7 @@ void MainWindow::CreateLayout()
     pSpinRestTime_s->setMaximum(999);
     connect(pSpinRestTime_s, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&](const int &nNewValue) {
        UserTimeSettings::SetRestTime_s(nNewValue * 60);
-       m_pAppSettings->setValue("rest_time", UserTimeSettings::RestTime_s());
+       m_pSettingStrorage->StoreRestTime_s(UserTimeSettings::RestTime_s());
     });
     pRestLayout->addWidget(pRestLabel);
     pRestLayout->addWidget(pSpinRestTime_s);
@@ -80,8 +82,7 @@ void MainWindow::CreateLayout()
     pSpinToleranceTime_s->setMaximum(999);
     connect(pSpinToleranceTime_s, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&](const int &nNewValue) {
        UserTimeSettings::SetToleranceTime_s(nNewValue);
-       m_pAppSettings->setValue("tolerance_time", UserTimeSettings::ToleranceTime_s());
-
+       m_pSettingStrorage->StoreToleranceTime_s(UserTimeSettings::ToleranceTime_s());
     });
     pToleranceLayout->addWidget(pToleranceLabel);
     pToleranceLayout->addWidget(pSpinToleranceTime_s);
@@ -105,11 +106,11 @@ void MainWindow::CreateLayout()
     QHBoxLayout* pInfoLayout = new QHBoxLayout;
     QLabel* pLabel = new QLabel;
     pLabel->setText(tr("User idle time\nUser active time"));
-    m_pTimeLabel = new QLabel;
-    m_pTimeLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    m_pTimeInfoLabel = new QLabel;
+    m_pTimeInfoLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
     pInfoLayout->addWidget(pLabel);
-    pInfoLayout->addWidget(m_pTimeLabel);
+    pInfoLayout->addWidget(m_pTimeInfoLabel);
 
     pMainLayout->addLayout(pInfoLayout);
 
@@ -136,14 +137,14 @@ void MainWindow::CreateActions()
     m_pOnTopAction = new QAction(tr("Always on &top"), this);
     m_pOnTopAction->setCheckable(true);
     connect(m_pOnTopAction, &QAction::triggered, [&](bool bOnTop) {
-        m_pAppSettings->setValue("always_on_top", bOnTop);
+        m_pSettingStrorage->StoreAlwaysOnTop(bOnTop);
         SetOnTop(bOnTop);
     });
 
     m_pOnStartUpAction = new QAction(tr("Run on &startup"), this);
     m_pOnStartUpAction->setCheckable(true);
     connect(m_pOnStartUpAction, &QAction::triggered, [&](bool bRunOnStartUp) {
-        m_pAppSettings->setValue("run_on_startup", bRunOnStartUp);
+        m_pSettingStrorage->StoreRunOnStartUp(bRunOnStartUp);
         SetOnStartUp(bRunOnStartUp);
     });
 }
@@ -222,6 +223,8 @@ void MainWindow::SetIconByTime()
 
 MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
 {
+    this->restoreGeometry(m_pSettingStrorage->RestoreGeometry());
+
     m_pLastUserInput = new UserInputWatcher(new SystemInput());
 
     m_pTrayIcon = new QSystemTrayIcon(this);
@@ -266,7 +269,7 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
 
         m_pPassedToleranceBar->setValue(m_pLastUserInput->PassedTolerance_ms() > m_pPassedToleranceBar->maximum() ? m_pPassedToleranceBar->maximum() : m_pLastUserInput->PassedTolerance_ms());
 
-        m_pTimeLabel->setText(QString("%1\n%2")
+        m_pTimeInfoLabel->setText(QString("%1\n%2")
                           .arg(TimeFormat::GetMinsAndSeconds(m_pLastUserInput->UserIdleTime_ms()))
                           .arg(TimeFormat::GetMinsAndSeconds(m_pLastUserInput->UserActiveTime_ms())));
 
@@ -282,6 +285,11 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
 
     m_oTimer.start(100);
     m_oBeepTimer.start(1100);
+}
+
+MainWindow::~MainWindow()
+{
+    m_pSettingStrorage->StoreGeometry(saveGeometry());
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

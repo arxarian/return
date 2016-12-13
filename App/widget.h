@@ -13,6 +13,7 @@
 #include "userinputwatcher.h"
 #include "usertimesettings.h"
 #include "timeformat.h"
+#include "settingstorage.h"
 
 class MainWindow : public QMainWindow
 {
@@ -41,7 +42,7 @@ class MainWindow : public QMainWindow
 
     QProgressBar* m_pPassedToleranceBar = 0;
 
-    QSettings* m_pAppSettings = 0;
+    SettingStorage* m_pSettingStrorage = new SettingStorage(this);
 
     qint32 m_nExtraWorkTime_ms = 0;
 
@@ -56,7 +57,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QMainWindow *parent = 0);
-    ~MainWindow() {}
+    ~MainWindow();
 
     // QWidget interface
 protected:

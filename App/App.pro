@@ -8,8 +8,17 @@ QT += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = StopNotebook
 TEMPLATE = app
+
+APPNAME = StopNotebook
+VERSION = 0.0.0
+
+TARGET = "$$APPNAME"
+
+CONFIG += c++11
+
+DEFINES += APP_NAME=\\\"$$APPNAME\\\"
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 CONFIG += c++11
 
@@ -18,7 +27,8 @@ SOURCES += \
     widget.cpp \
     userinputwatcher.cpp \
     usertimesettings.cpp \
-    systeminput.cpp
+    systeminput.cpp \
+    settingstorage.cpp
 
 HEADERS += \
     widget.h \
@@ -26,9 +36,12 @@ HEADERS += \
     usertimesettings.h \
     singleton.h \
     systeminput.h \
-    timeformat.h
+    timeformat.h \
+    settingstorage.h
 
 LIBS += -lKernel32
 
 RESOURCES += \
     resources.qrc
+
+RC_FILE = app.rc
