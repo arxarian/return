@@ -77,6 +77,7 @@ bool UserInputWatcher::UpdateLastUserInput()
         if(m_nUserIdleTime_ms >= UserTimeSettings::RestTime_s() * 1000)
         {
             m_nStartUserActiveTime_ms = -1;
+            m_nUserActiveTime_ms = 0;
             emit NewWorkPeriod();
             // qDebug() << "reseting idle time";
         }

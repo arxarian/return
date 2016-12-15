@@ -24,11 +24,12 @@ int main(int argc, char *argv[])
   c) ok - schovat do tray baru, obnovit z traybaru
   d)      about (version info, author name, home page, ect)
   e) ok - kontext menu na pravé kliknutí (možnost Really Exit, add 5 minutes, open)
-  f)      add app binary icon
+  f) ok - add app binary icon
+  g)      progress bar při větší toleranci moc nefunguje
   h)      update over internet (check at least)
   i) ok - tolerance - např. stisknutí klávesy nezastaví cooldown (zastaví, pokud není nucená pauza)
   j)      okénko pro test reporty a feedback over internet a donate (paypal, bitcoin, ...)
-  f)      pamatovat si pozici, kde se má aplikace spouštět (jak to funguje u dvou monitorů?)
+  f) ok - pamatovat si pozici, kde se má aplikace spouštět (jak to funguje u dvou monitorů? zarovná se do na nejbližší viditelnou pozici - platí pro Win 10)
   k)      hezčí a nativní grafika (a udělat něco s tím zvětšením aplikace, např. lépe navázat na sebe prvky nebo to rovnou zakázat)
   m) ok - run at startup checkbox
   o)      event driven
@@ -42,7 +43,6 @@ int main(int argc, char *argv[])
   w) ok - saving data in QSettings
   z)      write unit tests
 
-  aa)     versioning - http://www.openguru.com/2009/11/qt-best-way-to-set-application-version.html
   ab)     neprodávat to za $25
   ac)     nezaměřovat to přímo na RSI, ale jsou i jiné problémy (např. protáhnout si nohy, zakroutit hlavou => vybízí to k sepsání několika tipů (nechtěl jsem napsat něco jiného?))
   ad)     grafy - grafy čeho? Využití myši, pravé nebo levé klávesnice? Není to zbytečně složité? Nebude to děsit uživatele? Statistika (pocet period)
@@ -53,3 +53,5 @@ int main(int argc, char *argv[])
 // http://doc.qt.io/qt-5/qtwidgets-desktop-systray-example.html
 // http://doc.qt.io/qt-4.8/activeqt-dotnet.html
 // http://doc.qt.io/qt-5/activeqt-index.html
+
+// https://github.com/hovancik/stretchly

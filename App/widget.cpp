@@ -275,12 +275,22 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
 
         m_pTrayIcon->setToolTip(QString(tr("Work time is %1 mins")).arg(TimeFormat::GetMins(m_pLastUserInput->UserActiveTime_ms())));
 
+        if(m_bNewPeriodNotificationDone && m_pLastUserInput->UserActiveTime_ms() > 0)
+        {
+            m_bNewPeriodNotificationDone = false;
+        }
     });
 
-    connect(m_pLastUserInput, &UserInputWatcher::NewWorkPeriod, [&]() {
+    connect(m_pLastUserInput, &UserInputWatcher::NewWorkPeriod, [&]() { // NOTE - this signal is emitted continuously when break is taken (not event driven)
         m_pPostponeAction->setEnabled(true);
         m_pPostponeAction->setChecked(false);
         m_nExtraWorkTime_ms = 0;
+
+        if(!m_bNewPeriodNotificationDone)
+        {
+            m_bNewPeriodNotificationDone = true;
+            PlaySound(TEXT("Notification.Default"), NULL, SND_ALIAS | SND_ASYNC );
+        }
     });
 
     m_oTimer.start(100);

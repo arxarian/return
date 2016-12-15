@@ -10,6 +10,8 @@
 #include <QDebug>
 #include <QDir>
 
+#include "Mmsystem.h"
+
 #include "userinputwatcher.h"
 #include "usertimesettings.h"
 #include "timeformat.h"
@@ -45,6 +47,8 @@ class MainWindow : public QMainWindow
     SettingStorage* m_pSettingStrorage = new SettingStorage(this);
 
     qint32 m_nExtraWorkTime_ms = 0;
+
+    bool m_bNewPeriodNotificationDone = false;
 
     void CreateTrayIcon();
     void SetTrayIcon(QString strIcon);
