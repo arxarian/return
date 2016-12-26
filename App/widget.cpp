@@ -295,7 +295,7 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
             m_bNewPeriodNotificationDone = true;
             if(bAlertUser)
             {
-                PlaySound(TEXT("Notification.Default"), NULL, SND_ALIAS | SND_ASYNC );
+                PlaySound(TEXT("FaxBeep"), NULL, SND_ALIAS | SND_ASYNC );
             }
         }
     });

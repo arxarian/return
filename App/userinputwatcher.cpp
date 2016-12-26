@@ -73,16 +73,15 @@ bool UserInputWatcher::UpdateLastUserInput()
         m_nUserIdleTime_ms = nTickCount - m_nPseudoLastUserInput_ms;
         m_nUserActiveTime_ms = nTickCount - m_nStartUserActiveTime_ms;
 
-        qDebug() << "actual:" << m_nUserIdleTime_ms << "last:" << m_nLastUserIdleTime_ms << "delta:" << m_nUserIdleTime_ms - m_nLastUserIdleTime_ms;
+//        qDebug() << "actual:" << m_nUserIdleTime_ms << "last:" << m_nLastUserIdleTime_ms << "delta:" << m_nUserIdleTime_ms - m_nLastUserIdleTime_ms;
         // if the user is idle for too long, reset counter
         if(m_nUserIdleTime_ms >= UserTimeSettings::RestTime_s() * 1000)
         {
-             qDebug() << "reseting idle time" << m_nUserIdleTime_ms;
+            // qDebug() << "reseting idle time" << m_nUserIdleTime_ms;
             m_nStartUserActiveTime_ms = -1;
             m_nUserActiveTime_ms = 0;
-            bool bAlertUser = (m_nUserIdleTime_ms - m_nLastUserIdleTime_ms) > 5000; // TODO - move to widget.c, also it's not working
+            bool bAlertUser = (m_nUserIdleTime_ms - m_nLastUserIdleTime_ms) < 5000; // if the application was frozen for more than 5 seconds, it wouldn't alert the user
             emit NewWorkPeriod(bAlertUser);
-            // qDebug() << "reseting idle time";
         }
 
         m_nLastUserIdleTime_ms = m_nUserIdleTime_ms;
