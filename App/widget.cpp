@@ -51,7 +51,7 @@ void MainWindow::CreateLayout()
 
     // work spin box
     QHBoxLayout* pWorkLayout = new QHBoxLayout;
-    QLabel* pWorkLabel = new QLabel(tr("Work time [mins]"));
+    QLabel* pWorkLabel = new QLabel(tr("Work time [mins]"));    // The layout's widgets aren't destroyed.
     QSpinBox* pSpinWorkTime_s = new QSpinBox;
     pSpinWorkTime_s->setValue(UserTimeSettings::WorkTime_s() / 60);
     pSpinWorkTime_s->setMaximum(999);
@@ -184,7 +184,7 @@ void MainWindow::SetOnTop(bool bOnTop)
 {
     if(bOnTop)
     {
-        this->setWindowFlags(Qt::WindowStaysOnTopHint);
+        this->setWindowFlags(Qt::WindowStaysOnTopHint | this->windowFlags());
     }
     else
     {
@@ -227,6 +227,7 @@ void MainWindow::SetIconByTime()
 
 MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
 {
+    this->setWindowFlags(Qt::WindowCloseButtonHint);
     this->restoreGeometry(m_pSettingStrorage->RestoreGeometry());
 
     m_pLastUserInput = new UserInputWatcher(new SystemInput());

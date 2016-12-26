@@ -19,8 +19,8 @@ int main(int argc, char *argv[])
 /**
   předloha umožňuje nastavit čas práce, nastavit čas přestávky, vybrat zvuk, změnit barvu záhlaví, zakázat změny nastavení (celkově nebo pokud se blíží čas přestávky)
 
-  a) ok - volitelný čas práce 0 - xx minut
-  b) ok - volitelný čas přestávky
+  a) ok - volitelný čas práce 0 - xx minut, volitelný čas přestávky
+  b)      fix memory leaks
   c) ok - schovat do tray baru, obnovit z traybaru
   d)      about (version info, author name, home page, ect)
   e) ok - kontext menu na pravé kliknutí (možnost Really Exit, add 5 minutes, open)
@@ -29,19 +29,18 @@ int main(int argc, char *argv[])
   h)      update over internet (check at least)
   i) ok - tolerance - např. stisknutí klávesy nezastaví cooldown (zastaví, pokud není nucená pauza)
   j)      okénko pro test reporty a feedback over internet a donate (paypal, bitcoin, ...)
-  f) ok - pamatovat si pozici, kde se má aplikace spouštět (jak to funguje u dvou monitorů? zarovná se do na nejbližší viditelnou pozici - platí pro Win 10)
   k)      hezčí a nativní grafika (a udělat něco s tím zvětšením aplikace, např. lépe navázat na sebe prvky nebo to rovnou zakázat)
   m) ok - run at startup checkbox
   o)      event driven
   p) ok - sound signalisation (on rest time, on the start of work period)
   q)      united graphics
   r)      little numbers of times?
-  q) in - menu
   u)      better name - stretch ya, take a break, don't die, stop working, look around, go away, be active, RETURN - RepEtitive sTress injUry pReveNter
                       - protáhni se, nezakrň,
   v) ok - always on top
-  y)      info about running in tray system
   w) ok - saving data in QSettings
+  y)      info about running in tray system (or add tips and tricks)
+  x) in - menu
   z)      write unit tests
 
   ab)     neprodávat to za $25
