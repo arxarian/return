@@ -1,6 +1,6 @@
 #include "widget.h"
 
-void MainWindow::CreateTrayIcon()
+void MainWindow::CreateTrayMenu()
 {
     QMenu* pTrayIconMenu = new QMenu(this);
     pTrayIconMenu->addAction(m_pOpenAction);
@@ -19,7 +19,7 @@ void MainWindow::SetTrayIcon(QString strIcon)
 {
     if(strIcon != m_strSetTrayIcon && m_pTrayIcon)
     {
-        QIcon icon(strIcon);
+        const QIcon icon(strIcon);
         m_pTrayIcon->setIcon(icon);
         m_pTrayIcon->setVisible(true);
 
@@ -29,18 +29,19 @@ void MainWindow::SetTrayIcon(QString strIcon)
 
 void MainWindow::LoadSettings()
 {
+    // work time
     qint32 nWorkTime_s = m_pSettingStrorage->RestoreWorkTime_s();
     UserTimeSettings::SetWorkTime_s(nWorkTime_s < 0 ? UserTimeSettings::WorkTime_s() : nWorkTime_s);
-
+    // rest time
     qint32 nRestTime_s = m_pSettingStrorage->RestoreRestTime_s();
     UserTimeSettings::SetRestTime_s(nRestTime_s < 0 ? UserTimeSettings::RestTime_s() : nRestTime_s);
-
+    // tolerance time
     qint32 nToleranceTime_s = m_pSettingStrorage->RestoreToleranceTime_s();
     UserTimeSettings::SetToleranceTime_s(nToleranceTime_s < 0 ? UserTimeSettings::ToleranceTime_s() : nToleranceTime_s);
-
+    // on top
     m_pOnTopAction->setChecked(m_pSettingStrorage->RestoreAlwaysOnTop());
     SetOnTop(m_pOnTopAction->isChecked());
-
+    // run on startup
     m_pOnStartUpAction->setChecked(m_pSettingStrorage->RestoreRunOnStartUp());
 }
 
@@ -51,7 +52,7 @@ void MainWindow::CreateLayout()
     // work spin box
     QHBoxLayout* pWorkLayout = new QHBoxLayout;
     QLabel* pWorkLabel = new QLabel(tr("Work time [mins]"));
-    QSpinBox* pSpinWorkTime_s = new QSpinBox(this); // TODO - má tu být this? Nemá tu být některý child?
+    QSpinBox* pSpinWorkTime_s = new QSpinBox;
     pSpinWorkTime_s->setValue(UserTimeSettings::WorkTime_s() / 60);
     pSpinWorkTime_s->setMaximum(999);
     connect(pSpinWorkTime_s, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&](const int &nNewValue) {
@@ -64,7 +65,7 @@ void MainWindow::CreateLayout()
     // rest spin box
     QHBoxLayout* pRestLayout = new QHBoxLayout;
     QLabel* pRestLabel = new QLabel(tr("Rest time [mins]"));
-    QSpinBox* pSpinRestTime_s = new QSpinBox(this);
+    QSpinBox* pSpinRestTime_s = new QSpinBox;
     pSpinRestTime_s->setValue(UserTimeSettings::RestTime_s() / 60);
     pSpinRestTime_s->setMaximum(999);
     connect(pSpinRestTime_s, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&](const int &nNewValue) {
@@ -77,12 +78,16 @@ void MainWindow::CreateLayout()
     // tolerance spin box
     QHBoxLayout* pToleranceLayout = new QHBoxLayout;
     QLabel* pToleranceLabel = new QLabel(tr("Tolerance time [s]"));
-    QSpinBox* pSpinToleranceTime_s = new QSpinBox(this);
+    QSpinBox* pSpinToleranceTime_s = new QSpinBox;
     pSpinToleranceTime_s->setValue(UserTimeSettings::ToleranceTime_s());
     pSpinToleranceTime_s->setMaximum(999);
     connect(pSpinToleranceTime_s, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&](const int &nNewValue) {
        UserTimeSettings::SetToleranceTime_s(nNewValue);
        m_pSettingStrorage->StoreToleranceTime_s(UserTimeSettings::ToleranceTime_s());
+       if(m_pPassedToleranceBar != nullptr) // TODO - redo to signals and slots
+       {
+           m_pPassedToleranceBar->setMaximum(UserTimeSettings::ToleranceTime_s() * 1000);
+       }
     });
     pToleranceLayout->addWidget(pToleranceLabel);
     pToleranceLayout->addWidget(pSpinToleranceTime_s);
@@ -95,7 +100,7 @@ void MainWindow::CreateLayout()
     QVBoxLayout* pMainLayout = new QVBoxLayout;
     pMainLayout->addLayout(pTimeLayout);
 
-    m_pPassedToleranceBar = new QProgressBar(this);
+    m_pPassedToleranceBar = new QProgressBar;
     m_pPassedToleranceBar->setMaximum(0);
     m_pPassedToleranceBar->setMaximum(UserTimeSettings::ToleranceTime_s() * 1000);
     m_pPassedToleranceBar->setTextVisible(false);
@@ -104,8 +109,7 @@ void MainWindow::CreateLayout()
 
     // add label with info
     QHBoxLayout* pInfoLayout = new QHBoxLayout;
-    QLabel* pLabel = new QLabel;
-    pLabel->setText(tr("User idle time\nUser active time"));
+    QLabel* pLabel = new QLabel(tr("User idle time\nUser active time"));
     m_pTimeInfoLabel = new QLabel;
     m_pTimeInfoLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
@@ -230,7 +234,7 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
     m_pTrayIcon = new QSystemTrayIcon(this);
 
     CreateActions();
-    CreateTrayIcon();
+    CreateTrayMenu();
     SetTrayIcon(":/go_icon.png");
 
     LoadSettings();
@@ -281,7 +285,7 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
         }
     });
 
-    connect(m_pLastUserInput, &UserInputWatcher::NewWorkPeriod, [&]() { // NOTE - this signal is emitted continuously when break is taken (not event driven)
+    connect(m_pLastUserInput, &UserInputWatcher::NewWorkPeriod, [&](bool bAlertUser) { // NOTE - this signal is emitted continuously when break is taken (not event driven)
         m_pPostponeAction->setEnabled(true);
         m_pPostponeAction->setChecked(false);
         m_nExtraWorkTime_ms = 0;
@@ -289,7 +293,10 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
         if(!m_bNewPeriodNotificationDone)
         {
             m_bNewPeriodNotificationDone = true;
-            PlaySound(TEXT("Notification.Default"), NULL, SND_ALIAS | SND_ASYNC );
+            if(bAlertUser)
+            {
+                PlaySound(TEXT("Notification.Default"), NULL, SND_ALIAS | SND_ASYNC );
+            }
         }
     });
 

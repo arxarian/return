@@ -50,7 +50,7 @@ class MainWindow : public QMainWindow
 
     bool m_bNewPeriodNotificationDone = false;
 
-    void CreateTrayIcon();
+    void CreateTrayMenu();
     void SetTrayIcon(QString strIcon);
     void LoadSettings();
     void CreateLayout();

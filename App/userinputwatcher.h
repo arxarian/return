@@ -25,6 +25,7 @@ class UserInputWatcher : public QObject, public Singleton<UserInputWatcher>
     qint64 m_nStartUserActiveTime_ms = -1;
     qint64 m_nUserActiveTime_ms =0;
     qint64 m_nUserIdleTime_ms = 0;
+    qint64 m_nLastUserIdleTime_ms = 0;
     qint32 m_nExtraWorkTime_ms = 0;
 
     qint64 m_nPassedTolerance_ms = -1;
@@ -42,7 +43,7 @@ public:
     qint32 PassedTolerance_ms();
 
 signals:
-    void NewWorkPeriod(void);
+    void NewWorkPeriod(bool bAlertUser);
 };
 
 #endif // LASTUSERINPUT_H
