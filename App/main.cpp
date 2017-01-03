@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
   i) ok - tolerance - např. stisknutí klávesy nezastaví cooldown (zastaví, pokud není nucená pauza)
   j)      okénko pro test reporty a feedback over internet a donate (paypal, bitcoin, ...)
   k)      hezčí a nativní grafika (a udělat něco s tím zvětšením aplikace, např. lépe navázat na sebe prvky nebo to rovnou zakázat)
+  l)      disable sounds option?
   m) ok - run at startup checkbox
   o)      event driven
   p) ok - sound signalisation (on rest time, on the start of work period)
