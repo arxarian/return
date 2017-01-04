@@ -16,12 +16,15 @@
 #include "usertimesettings.h"
 #include "timeformat.h"
 #include "settingstorage.h"
+#include "programupdater.h"
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
     UserInputWatcher* m_pLastUserInput;
+
+    ProgramUpdater* m_pProgramUpdater = new ProgramUpdater(this);
 
     QLabel* m_pTimeInfoLabel = 0;
 

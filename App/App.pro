@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT += core gui
+QT += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -28,7 +28,9 @@ SOURCES += \
     userinputwatcher.cpp \
     usertimesettings.cpp \
     systeminput.cpp \
-    settingstorage.cpp
+    settingstorage.cpp \
+    programupdater.cpp \
+    urldownloader.cpp
 
 HEADERS += \
     widget.h \
@@ -37,7 +39,9 @@ HEADERS += \
     singleton.h \
     systeminput.h \
     timeformat.h \
-    settingstorage.h
+    settingstorage.h \
+    programupdater.h \
+    urldownloader.h
 
 LIBS += -lKernel32 -lWinmm
 

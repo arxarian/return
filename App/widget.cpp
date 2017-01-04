@@ -301,8 +301,31 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
         }
     });
 
+    connect(m_pProgramUpdater, &ProgramUpdater::UpdateCheckFinished, [=](const bool bUpdateAvaible, const QString& strLatestVersion){
+        QMessageBox::StandardButton eDialogAnswer = QMessageBox::Yes;
+
+        if(bUpdateAvaible)
+        {
+            eDialogAnswer = QMessageBox::question(this, tr("New Update Available"),
+                                                  tr("A new version %1 is available.\nDo you want to download it?").arg(strLatestVersion),
+                                                  QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+            if (eDialogAnswer == QMessageBox::Yes) {
+                qDebug() << "user wants to download new version";
+                // The user want to update, let's download the update
+//                ProgramUpdater* updater = dynamic_cast<ProgramUpdater*>(sender());
+//                updater->updateProgram();
+            }
+        }
+        else
+        {
+            qDebug() << "no new version is avaible";
+        }
+    });
+
     m_oTimer.start(100);
     m_oBeepTimer.start(1100);
+
+    m_pProgramUpdater->CheckForUpdates();
 }
 
 MainWindow::~MainWindow()
