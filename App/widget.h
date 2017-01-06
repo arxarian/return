@@ -16,7 +16,7 @@
 #include "usertimesettings.h"
 #include "timeformat.h"
 #include "settingstorage.h"
-#include "programupdater.h"
+#include "programupdatergithub.h"
 
 class MainWindow : public QMainWindow
 {
@@ -24,7 +24,7 @@ class MainWindow : public QMainWindow
 
     UserInputWatcher* m_pLastUserInput;
 
-    ProgramUpdater* m_pProgramUpdater = new ProgramUpdater(this);
+    ProgramUpdater* m_pProgramUpdater = new ProgramUpdaterGithub(this);
 
     QLabel* m_pTimeInfoLabel = 0;
 

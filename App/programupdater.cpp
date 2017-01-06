@@ -1,10 +1,8 @@
 #include "programupdater.h"
 
-ProgramUpdater::ProgramUpdater(QObject *parent) : QObject(parent)
+ProgramUpdater::ProgramUpdater(const QString strLatestReleaseUrl, QObject *parent) : QObject(parent), m_strLatestRelaseUrl(strLatestReleaseUrl)
 {
-//    qDebug() << "is there a new version?";
-//    DownloadVersionInfoSource();
-//    CheckForUpdates();
+    // empty constructor
 }
 
 void ProgramUpdater::CheckForUpdates()
@@ -19,28 +17,6 @@ void ProgramUpdater::CheckForUpdates()
     });
 
     m_pUrlDownloader->DownloadUrl(m_strLatestRelaseUrl);
-}
-
-void ProgramUpdater::UpdateProgram()
-{
-    // TODO - move the dialog part to GUI
-    // if there is a newer version, ask the user if he wants to update
-    //  display a dialog with new version number and question: "do you want to download new version" and yes or no buttons
-    //  if user clicks yes, open broswer with download url
-    //   get download url from program updater (or url can be obtain as argument of function which displayes dialog)
-    //  if user clicks no, do nothing
-
-    // if there is no new version, do nothing
-}
-
-void ProgramUpdater::DownloadVersionInfoSource()
-{
-    //   start downloading the page containg info about latest version
-    //    create request
-    //   do not wait untile the downloading is completed (non blocking downloading)
-    //   get notifaction when download is finished
-    //   Extract latest version info from source
-    //    return latest version number // NOTE - to whom?
 }
 
 bool ProgramUpdater::IsLatestVersionNewer()
@@ -62,23 +38,7 @@ bool ProgramUpdater::IsLatestVersionNewer()
     return false;
 }
 
-void ProgramUpdater::ExtractLatestVersionInfo(const QByteArray& arrUrlContent)
+void ProgramUpdater::SetLatestVersion(const QString &strLatestVersion)
 {
-    QJsonDocument oJsonDoc = QJsonDocument::fromJson(arrUrlContent);
-    if(!oJsonDoc.isNull())
-    {
-        if(oJsonDoc.isObject())
-        {
-            QJsonObject oJsonObject = oJsonDoc.object();
-            m_strLatestVersion = oJsonObject["tag_name"].toString();
-        }
-        else
-        {
-            qDebug() << "not an object";
-        }
-    }
-    else
-    {
-        qDebug() << "invalid json";
-    }
+    m_strLatestVersion = strLatestVersion;
 }

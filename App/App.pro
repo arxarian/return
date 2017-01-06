@@ -30,7 +30,8 @@ SOURCES += \
     systeminput.cpp \
     settingstorage.cpp \
     programupdater.cpp \
-    urldownloader.cpp
+    urldownloader.cpp \
+    programupdatergithub.cpp
 
 HEADERS += \
     widget.h \
@@ -41,7 +42,8 @@ HEADERS += \
     timeformat.h \
     settingstorage.h \
     programupdater.h \
-    urldownloader.h
+    urldownloader.h \
+    programupdatergithub.h
 
 LIBS += -lKernel32 -lWinmm
 

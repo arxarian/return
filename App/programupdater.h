@@ -12,28 +12,29 @@ class ProgramUpdater : public QObject
 {
     Q_OBJECT
 
-    const QString m_strLatestRelaseUrl = "https://api.github.com/repos/hubnerp/return/releases/latest";
+    const QString m_strLatestRelaseUrl;
 
     QString m_strLatestVersion;
 
-    void DownloadVersionInfoSource();
     bool IsLatestVersionNewer();
 
     UrlDownloader* m_pUrlDownloader = new UrlDownloader(this);
 
+protected:
+    void SetLatestVersion(const QString& strLatestVersion);
+
 public:
-    explicit ProgramUpdater(QObject *parent = 0);
+    explicit ProgramUpdater(const QString strLatestReleaseUrl, QObject *parent = 0);
 
 signals:
     void UpdateCheckFinished(bool bUpdateAvaible, QString strLatestVersion);
     void VersionInfoAvaible();
 
 public slots:
-    void CheckForUpdates();
-    void UpdateProgram();
+    void CheckForUpdates(); // entry point
 
 private slots:
-    void ExtractLatestVersionInfo(const QByteArray &arrUrlContent);    // TODO - should be virtual
+    virtual void ExtractLatestVersionInfo(const QByteArray &arrUrlContent) = 0;
 };
 
 #endif // PROGRAMUPDATER_H

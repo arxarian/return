@@ -6,6 +6,8 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
+#include <QMetaEnum>
+
 class UrlDownloader : public QObject
 {
     Q_OBJECT
@@ -16,13 +18,15 @@ class UrlDownloader : public QObject
 public:
     explicit UrlDownloader(QObject *parent = 0);
 
+public slots:
     void DownloadUrl(const QString& strUrl);
-
-signals:
-    void DownloadFinished(QByteArray arrUrlContent);
 
 private slots:
     void OnReplyFinished();
+
+signals:
+    void DownloadFinished(QByteArray arrUrlContent);
+    void Error(QString strError);
 };
 
 #endif // URLDOWNLOADER_H
