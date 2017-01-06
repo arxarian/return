@@ -5,10 +5,10 @@ UrlDownloader::UrlDownloader(QObject *parent) : QObject(parent)
 
 }
 
-void UrlDownloader::DownloadUrl(const QString &strUrl)
+void UrlDownloader::DownloadUrl(const QUrl &oUrl)
 {
     qDebug() << QTime::currentTime();   // DEBUG
-    m_pResponse = m_oManager.get(QNetworkRequest(QUrl(strUrl)));
+    m_pResponse = m_oManager.get(QNetworkRequest(oUrl));
     qDebug() << QTime::currentTime();   // DEBUG
 
     if(m_pResponse == nullptr) return;

@@ -1,6 +1,7 @@
 #include "programupdatergithub.h"
 
-ProgramUpdaterGithub::ProgramUpdaterGithub(QObject *parent) : ProgramUpdater("https://api.github.com/repos/hubnerp/return/releases/latest", parent)
+ProgramUpdaterGithub::ProgramUpdaterGithub(QObject *parent) :
+    ProgramUpdater(QUrl("https://api.github.com/repos/hubnerp/return/releases/latest"), parent)
 {
     //
 }

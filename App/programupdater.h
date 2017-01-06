@@ -12,7 +12,7 @@ class ProgramUpdater : public QObject
 {
     Q_OBJECT
 
-    const QString m_strLatestRelaseUrl;
+    const QUrl m_oLatestRelaseUrl;
 
     QString m_strLatestVersion;
 
@@ -24,7 +24,7 @@ protected:
     void SetLatestVersion(const QString& strLatestVersion);
 
 public:
-    explicit ProgramUpdater(const QString strLatestReleaseUrl, QObject *parent = 0);
+    explicit ProgramUpdater(const QUrl oLatestReleaseUrl, QObject *parent = 0);
 
 signals:
     void UpdateCheckFinished(bool bUpdateAvaible, QString strLatestVersion);

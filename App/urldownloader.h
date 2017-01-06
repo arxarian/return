@@ -19,7 +19,7 @@ public:
     explicit UrlDownloader(QObject *parent = 0);
 
 public slots:
-    void DownloadUrl(const QString& strUrl);
+    void DownloadUrl(const QUrl &oUrl);
 
 private slots:
     void OnReplyFinished();

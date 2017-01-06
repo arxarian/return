@@ -1,6 +1,6 @@
 #include "programupdater.h"
 
-ProgramUpdater::ProgramUpdater(const QString strLatestReleaseUrl, QObject *parent) : QObject(parent), m_strLatestRelaseUrl(strLatestReleaseUrl)
+ProgramUpdater::ProgramUpdater(const QUrl oLatestReleaseUrl, QObject *parent) : QObject(parent), m_oLatestRelaseUrl(oLatestReleaseUrl)
 {
     // empty constructor
 }
@@ -16,7 +16,7 @@ void ProgramUpdater::CheckForUpdates()
         emit UpdateCheckFinished(bNewerVersionExists, m_strLatestVersion);
     });
 
-    m_pUrlDownloader->DownloadUrl(m_strLatestRelaseUrl);
+    m_pUrlDownloader->DownloadUrl(m_oLatestRelaseUrl);
 }
 
 bool ProgramUpdater::IsLatestVersionNewer()
